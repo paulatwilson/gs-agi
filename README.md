@@ -7,6 +7,17 @@ core of [Sarien](https://github.com/cmatsuoka/sarien) (an AGI
 interpreter); the graphics, sound and application layers are written
 fresh against the Apple IIGS toolbox.
 
+**This targets real, native 320x200 Super Hi-Res -- not Sierra's
+original double-wide-pixel AGI graphics stretched to fit.** Sierra's
+AGI PICTURE/VIEW resources are authored in a 160x168 logic space and
+displayed as doubled EGA pixels; running those resources here would
+just be pixel-doubling in a different costume. This engine doesn't
+read or play original Sierra AGI game resources -- it borrows AGI's
+bytecode *mechanics* (the parser/logic-VM/object-location model) for
+an original game, with its own native-resolution art pipeline still
+to be designed (see "Next steps"). Every coordinate in `logic.c`/
+`gamestate.h` is a real screen pixel, 1:1, no scale factor anywhere.
+
 ## Layout
 
 ```
@@ -55,10 +66,13 @@ actual IIGS toolbox integration.
 "extract vocab/logic/object, add graphics/sound/app-shell" brief, and
 each is a substantial project in its own right):
 
-- **AGI PICTURE/VIEW resource decoding.** Sierra's vector-picture fill
-  language and RLE cel format aren't decoded; `gfx_load_picture()`/
-  `gfx_draw_object()` draw placeholders. This is the seam where a real
-  decoder plugs in.
+- **A native picture/cel resource format and its decoder.** Sierra's
+  vector-picture fill language and RLE cel format are 160x168-space
+  formats and are intentionally *not* what this needs -- see the note
+  at the top of this file. `gfx_load_picture()`/`gfx_draw_object()`
+  draw placeholders until a real 320x200 format (bitmap or RLE, plus
+  per-scanline SHR palette/SCB data) is designed and a decoder written
+  for it.
 - **The motion stepper** (`move.obj`, `follow.ego`, `wander`'s actual
   per-frame movement). The opcodes update `vt_entry` bookkeeping
   correctly; nothing currently advances position frame-to-frame.
@@ -72,18 +86,19 @@ each is a substantial project in its own right):
 
 ## On-disk resource convention
 
-Resources load from a `GAME:` prefixed GS/OS path (see `main.c`):
+All resources here are freshly authored for this game, not extracted
+from an existing Sierra title. Resources load from a `GAME:` prefixed
+GS/OS path (see `main.c`):
 
-| File           | Contents                                              |
-|----------------|--------------------------------------------------------|
-| `GAME:WORDS.TOK` | Sierra dictionary resource, unmodified                |
-| `GAME:OBJECT`    | Sierra OBJECT resource, unmodified                    |
-| `GAME:LOGIC.n`   | Raw decompressed LOGIC resource #n, unmodified        |
-| `GAME:SOUND.n`   | **Not** Sierra's format -- see `sound_iigs.c`'s header for the simple DOC note-list layout this engine expects instead |
+| File             | Contents                                              |
+|------------------|--------------------------------------------------------|
+| `GAME:WORDS.TOK` | Dictionary resource, Sierra's byte format (it's plain text-to-id data, resolution-independent -- reusing the format is just convenient, not a compatibility goal) |
+| `GAME:OBJECT`    | Object-name/location resource, same reasoning as WORDS.TOK |
+| `GAME:LOGIC.n`   | Decompressed LOGIC bytecode #n for this game, compiled by an AGI-dialect compiler targeting 320x200 coordinates throughout -- **not** a Sierra game's original LOGIC.n (those encode position/size literals for 160x168 space and would place everything wrong here) |
+| `GAME:SOUND.n`   | This engine's own DOC note-list format -- see `sound_iigs.c`'s header |
 
 A `GAME` prefix needs to exist as a GS/OS pathname (a subdirectory, or
-a defined prefix) pointing at wherever you've extracted the original
-game's resources with an existing AGI resource-extraction tool.
+a defined prefix) pointing at this game's own compiled resource tree.
 
 ## Building
 
@@ -121,10 +136,13 @@ link obj/util.o obj/vocab.o obj/object.o obj/logic.o obj/gfx_iigs.o \
 
 ## Next steps, roughly in the order they unblock a playable game
 
-1. A PICTURE/VIEW resource decoder feeding `gfx_iigs.c`'s seams.
+1. Design a native 320x200 picture/cel resource format (bitmap or
+   RLE, plus per-scanline SHR palette/SCB data) and its decoder,
+   feeding `gfx_iigs.c`'s seams. Not a Sierra-format decoder -- see
+   the note at the top of this file.
 2. A motion stepper (`motion.c`-equivalent) driven once per
    `sys_idle_pump()`/main-loop tick.
-3. A one-time Sierra `.SND` -> DOC note-list converter for
-   `sound_iigs.c`.
+3. An authoring tool (or hand-written note lists) producing this
+   game's `SOUND.n` DOC note-list files.
 4. Save/restore game, backed by a GS/OS file instead of the message
    box currently standing in for it.

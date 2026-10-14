@@ -7,14 +7,25 @@
  * touches QuickDraw II directly -- it only calls these entry points
  * with resource/object numbers, which is what makes logic.c portable.
  *
+ * RESOLUTION IS NATIVE, NOT A PORT OF SIERRA'S ART. Sierra's AGI
+ * PICTURE/VIEW resources are authored in a 160x168 logic space and
+ * displayed as double-wide EGA pixels -- running them here would mean
+ * every object is pixel-doubled 320x200 fakery. This engine does not
+ * decode that format and is not meant to play original Sierra AGI
+ * game resources. All coordinates in gamestate.h/logic.c (vt_entry
+ * x_pos/y_pos, GFX_WIDTH/GFX_HEIGHT below) are real 320x200 SHR
+ * pixels, full stop -- one logic unit is one screen pixel, no scale
+ * factor anywhere in the pipeline.
+ *
  * NOTE ON SCOPE: this module manages the screen surface, palette,
  * text box and sprite *positions* (draw/erase/move, backed by
- * off-screen pixel blit). It does not include an AGI PICTURE/VIEW
- * byte-code decoder (Sierra's vector-picture fill/line language and
- * RLE cel format) -- that is a separate, large resource-format
- * project in its own right and wasn't one of the three modules asked
- * for. gfx_load_picture()/gfx_set_cel() are the seams where that
- * decoder plugs in later: today they clear to a flat color / draw a
+ * off-screen pixel blit). It does not yet include a decoder for this
+ * engine's own native-resolution picture/cel resource format (that
+ * format doesn't exist yet either -- it needs designing: likely an
+ * uncompressed or RLE 320x200 bitmap per picture, plus a per-scanline
+ * SHR palette/SCB, rather than Sierra's vector fill language).
+ * gfx_load_picture()/gfx_set_cel() are the seams where that decoder
+ * plugs in later: today they clear to a flat color / draw a
  * placeholder box so the engine runs end to end.
  */
 #ifndef INTERGELLIUM_GFX_IIGS_H
