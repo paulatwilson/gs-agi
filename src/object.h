@@ -3,8 +3,8 @@
  * tracking of "where is object N" plus the OBJECT resource loader.
  * Screen presentation of the inventory screen is gfx_iigs.c's job.
  */
-#ifndef INTERGELLIUM_OBJECT_H
-#define INTERGELLIUM_OBJECT_H
+#ifndef GSAGI_OBJECT_H
+#define GSAGI_OBJECT_H
 
 #include "agitypes.h"
 
@@ -17,4 +17,4 @@ const char *object_name(unsigned int n);
 
 unsigned int object_count(void);
 
-#endif /* INTERGELLIUM_OBJECT_H */
+#endif /* GSAGI_OBJECT_H */

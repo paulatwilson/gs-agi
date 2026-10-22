@@ -3,8 +3,8 @@
  * Sierra AGI text-message XOR decrypt. Pulled out of Sarien's
  * sarien.h/global.c; no platform dependency at all.
  */
-#ifndef INTERGELLIUM_UTIL_H
-#define INTERGELLIUM_UTIL_H
+#ifndef GSAGI_UTIL_H
+#define GSAGI_UTIL_H
 
 #include "agitypes.h"
 
@@ -20,4 +20,4 @@ void setvar(int v, int val);
 /* XORs resource bytes against the Sierra "Avis Durgan" key stream. */
 void decrypt(UINT8 *mem, int len);
 
-#endif /* INTERGELLIUM_UTIL_H */
+#endif /* GSAGI_UTIL_H */

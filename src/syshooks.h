@@ -5,8 +5,8 @@
  * stay responsive instead of freezing the toolbox event loop.
  * Implemented in main.c.
  */
-#ifndef INTERGELLIUM_SYSHOOKS_H
-#define INTERGELLIUM_SYSHOOKS_H
+#ifndef GSAGI_SYSHOOKS_H
+#define GSAGI_SYSHOOKS_H
 
 void sys_idle_pump(void);
 
@@ -19,4 +19,4 @@ void sys_idle_pump(void);
  */
 int sys_load_room(int n);
 
-#endif /* INTERGELLIUM_SYSHOOKS_H */
+#endif /* GSAGI_SYSHOOKS_H */

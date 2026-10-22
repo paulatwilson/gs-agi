@@ -5,8 +5,8 @@
  * touches the screen, sound, or keyboard calls through gfx_iigs.h /
  * sound_iigs.h / keyboard.h, never the toolbox directly.
  */
-#ifndef INTERGELLIUM_LOGIC_H
-#define INTERGELLIUM_LOGIC_H
+#ifndef GSAGI_LOGIC_H
+#define GSAGI_LOGIC_H
 
 #include "agitypes.h"
 
@@ -36,4 +36,4 @@ int  logic_run(int n);
  */
 void logic_interpret_cycle(void);
 
-#endif /* INTERGELLIUM_LOGIC_H */
+#endif /* GSAGI_LOGIC_H */

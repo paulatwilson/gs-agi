@@ -1,7 +1,8 @@
-# Intergellium
+# GS/AGI
 
-A native Apple IIGS/GS/OS AGI-style adventure game engine, built for
-ORCA/C. The text parser, bytecode logic interpreter and inventory
+GS/AGI is a native Apple IIgs GS/OS AGI-style adventure game engine,
+built for ORCA/C. It is a standalone engine: games (such as
+Intergellium) supply their own resources and are built against it. The text parser, bytecode logic interpreter and inventory
 system are a clean-room-adjacent port of the platform-independent
 core of [Sarien](https://github.com/cmatsuoka/sarien) (an AGI
 interpreter); the graphics, sound and application layers are written
@@ -14,7 +15,7 @@ displayed as doubled EGA pixels; running those resources here would
 just be pixel-doubling in a different costume. This engine doesn't
 read or play original Sierra AGI game resources -- it borrows AGI's
 bytecode *mechanics* (the parser/logic-VM/object-location model) for
-an original game, with its own native-resolution art pipeline still
+original games, with its own native-resolution art pipeline still
 to be designed (see "Next steps"). Every coordinate in `logic.c`/
 `gamestate.h` is a real screen pixel, 1:1, no scale factor anywhere.
 
@@ -86,8 +87,8 @@ each is a substantial project in its own right):
 
 ## On-disk resource convention
 
-All resources here are freshly authored for this game, not extracted
-from an existing Sierra title. Resources load from a `GAME:` prefixed
+The engine ships no game data. A game's resources are freshly
+authored for it, not extracted from an existing Sierra title. Resources load from a `GAME:` prefixed
 GS/OS path (see `main.c`):
 
 | File             | Contents                                              |
@@ -98,7 +99,7 @@ GS/OS path (see `main.c`):
 | `GAME:SOUND.n`   | This engine's own DOC note-list format -- see `sound_iigs.c`'s header |
 
 A `GAME` prefix needs to exist as a GS/OS pathname (a subdirectory, or
-a defined prefix) pointing at this game's own compiled resource tree.
+a defined prefix) pointing at the game's own compiled resource tree.
 
 ## Building
 
@@ -128,7 +129,7 @@ cc src/sound_iigs.c -o obj/sound_iigs.o
 cc src/keyboard.c -o obj/keyboard.o
 cc src/main.c -o obj/main.o
 link obj/util.o obj/vocab.o obj/object.o obj/logic.o obj/gfx_iigs.o \
-     obj/sound_iigs.o obj/keyboard.o obj/main.o -o Intergellium -t S16
+     obj/sound_iigs.o obj/keyboard.o obj/main.o -o GSAGI -t S16
 ```
 
 (flag names/`-t S16` output-type syntax per your ORCA/C version's
@@ -142,7 +143,7 @@ link obj/util.o obj/vocab.o obj/object.o obj/logic.o obj/gfx_iigs.o \
    the note at the top of this file.
 2. A motion stepper (`motion.c`-equivalent) driven once per
    `sys_idle_pump()`/main-loop tick.
-3. An authoring tool (or hand-written note lists) producing this
+3. An authoring tool (or hand-written note lists) producing a
    game's `SOUND.n` DOC note-list files.
 4. Save/restore game, backed by a GS/OS file instead of the message
    box currently standing in for it.

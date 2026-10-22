@@ -8,8 +8,8 @@
  * SDL front end, and the raw resource-directory bookkeeping that
  * belongs to the GS/OS resource loader, not to the logic core.
  */
-#ifndef INTERGELLIUM_GAMESTATE_H
-#define INTERGELLIUM_GAMESTATE_H
+#ifndef GSAGI_GAMESTATE_H
+#define GSAGI_GAMESTATE_H
 
 #include "agitypes.h"
 
@@ -215,4 +215,4 @@ struct agi_game {
 
 extern struct agi_game game;
 
-#endif /* INTERGELLIUM_GAMESTATE_H */
+#endif /* GSAGI_GAMESTATE_H */

@@ -3,8 +3,8 @@
  * tokenizing. Platform-independent; no SDL, no keyboard polling here
  * (that's keyboard.c's job -- it hands vocab.c a finished line).
  */
-#ifndef INTERGELLIUM_VOCAB_H
-#define INTERGELLIUM_VOCAB_H
+#ifndef GSAGI_VOCAB_H
+#define GSAGI_VOCAB_H
 
 #include "agitypes.h"
 
@@ -28,4 +28,4 @@ int vocab_find_word(const char *word, int *matched_len);
  */
 void vocab_parse_input(char *sentence);
 
-#endif /* INTERGELLIUM_VOCAB_H */
+#endif /* GSAGI_VOCAB_H */

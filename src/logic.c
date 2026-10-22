@@ -615,7 +615,7 @@ cmd(echo_line)       { }
 cmd(cancel_line)     { }
 cmd(init_joy)        { }
 cmd(toggle_monitor)  { }
-cmd(version)         { gfx_message_box("Intergellium AGI engine for Apple IIGS"); }
+cmd(version)         { gfx_message_box("GS/AGI engine for Apple IIGS"); }
 cmd(script_size)     { }
 cmd(set_game_id)     { }
 cmd(log)             { }

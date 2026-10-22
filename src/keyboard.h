@@ -3,8 +3,8 @@
  * Event Manager / toolbox, and runs the line-editor used both for
  * the normal command prompt and for AGI's get.string()/get.num().
  */
-#ifndef INTERGELLIUM_KEYBOARD_H
-#define INTERGELLIUM_KEYBOARD_H
+#ifndef GSAGI_KEYBOARD_H
+#define GSAGI_KEYBOARD_H
 
 #include "agitypes.h"
 
@@ -33,4 +33,4 @@ int  kbd_read_line(char *buffer, int maxlen, int row, int col);
 /* Waits for, consumes, and returns the next keypress. */
 int  kbd_wait_key(void);
 
-#endif /* INTERGELLIUM_KEYBOARD_H */
+#endif /* GSAGI_KEYBOARD_H */

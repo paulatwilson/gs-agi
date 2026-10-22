@@ -8,8 +8,8 @@
  * finishes" / "stop whatever is playing" -- it has no idea an
  * Ensoniq DOC or a wavetable even exists.
  */
-#ifndef INTERGELLIUM_SOUND_IIGS_H
-#define INTERGELLIUM_SOUND_IIGS_H
+#ifndef GSAGI_SOUND_IIGS_H
+#define GSAGI_SOUND_IIGS_H
 
 #include "agitypes.h"
 
@@ -30,4 +30,4 @@ void sound_service(void);
 int  sound_is_enabled(void);
 void sound_set_enabled(int on);
 
-#endif /* INTERGELLIUM_SOUND_IIGS_H */
+#endif /* GSAGI_SOUND_IIGS_H */

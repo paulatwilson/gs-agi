@@ -28,8 +28,8 @@
  * plugs in later: today they clear to a flat color / draw a
  * placeholder box so the engine runs end to end.
  */
-#ifndef INTERGELLIUM_GFX_IIGS_H
-#define INTERGELLIUM_GFX_IIGS_H
+#ifndef GSAGI_GFX_IIGS_H
+#define GSAGI_GFX_IIGS_H
 
 #include "agitypes.h"
 
@@ -85,4 +85,4 @@ void gfx_write_prompt(void);
  */
 int gfx_show_inventory(const char *const *names, int count, int select);
 
-#endif /* INTERGELLIUM_GFX_IIGS_H */
+#endif /* GSAGI_GFX_IIGS_H */

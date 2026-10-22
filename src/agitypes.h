@@ -5,8 +5,8 @@
  * These typedefs match that model directly (no 32-bit-host assumptions
  * like the original Sarien build carried).
  */
-#ifndef INTERGELLIUM_AGITYPES_H
-#define INTERGELLIUM_AGITYPES_H
+#ifndef GSAGI_AGITYPES_H
+#define GSAGI_AGITYPES_H
 
 typedef unsigned char   UINT8;
 typedef signed char     SINT8;
@@ -63,4 +63,4 @@ enum agi_restype {
 	rPICTURE
 };
 
-#endif /* INTERGELLIUM_AGITYPES_H */
+#endif /* GSAGI_AGITYPES_H */
