@@ -1,8 +1,8 @@
 # GS/AGI
 
 GS/AGI is a native Apple IIgs GS/OS AGI-style adventure game engine,
-built for ORCA/C. It is a standalone engine: games (such as
-Intergellium) supply their own resources and are built against it. The text parser, bytecode logic interpreter and inventory
+built for ORCA/C. It is a standalone engine: games supply their own resources and are built against it. The
+text parser, bytecode logic interpreter and inventory
 system are a clean-room-adjacent port of the platform-independent
 core of [Sarien](https://github.com/cmatsuoka/sarien) (an AGI
 interpreter); the graphics, sound and application layers are written
@@ -27,7 +27,7 @@ src/
   gamestate.h     struct agi_game, vt_entry, word/object/logic structs
   util.c/.h       byte helpers, var/flag accessors, AGI text decrypt
 
-  vocab.c/.h      dictionary (WORDS.TOK) lookup + sentence tokenizer
+  vocab.c/.h      dictionary (WORDS.TOK) lookup + sentence tokeniser
   object.c/.h     OBJECT resource loader + inventory location tracking
   logic.c/.h      LOGIC resource loader + the bytecode VM (~183 opcodes)
 
@@ -48,7 +48,7 @@ fixed static arrays:
 
 - `vocab_find_word()` -- the WORDS.TOK dictionary search, byte-for-byte
   the same algorithm (it's resource-format logic, not host logic).
-- `vocab_parse_input()` -- sentence tokenizing into `game.ego_words[]`.
+- `vocab_parse_input()` -- sentence tokenising into `game.ego_words[]`.
 - `object_load()`/`object_get_location()`/`object_set_location()` --
   OBJECT resource decode and location tracking.
 - `logic_load()` (message-block unpacking) and `logic_run()` /
@@ -147,3 +147,7 @@ link obj/util.o obj/vocab.o obj/object.o obj/logic.o obj/gfx_iigs.o \
    game's `SOUND.n` DOC note-list files.
 4. Save/restore game, backed by a GS/OS file instead of the message
    box currently standing in for it.
+
+## Licence
+
+MIT. See [LICENCE](LICENSE).
