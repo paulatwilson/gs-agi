@@ -3,3 +3,11 @@ obj/
 *.root
 *.data
 .DS_Store
+.claude
+.clinerules
+.cursor
+.opencode
+.windsurf
+AGENTS.md
+CLAUDE.md
+copilot-instructions.md
