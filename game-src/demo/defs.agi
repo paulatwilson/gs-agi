@@ -1,0 +1,90 @@
+// Names for the demo game. Standard AGI variables and flags keep their
+// usual numbers; the rest are this game's own.
+
+// ---- standard variables ----
+#define cur_room      v0
+#define prev_room     v1
+#define score         v3
+#define ego_dir       v6
+#define max_score     v7
+#define unknown_word  v9
+#define time_delay    v10
+
+// ---- standard flags ----
+#define f_entered_cli     f2
+#define f_ego_touched_p2  f3
+#define f_said_ok         f4
+#define f_new_room        f5
+#define f_first_time      f10
+
+// ---- animated objects ----
+#define ego       0
+#define o_rock    1
+#define o_coins   2
+#define o_fish    3
+#define o_glint0  4
+// glints are objects 4 to 11
+#define o_rip0    12
+#define o_rip1    13
+#define o_rip2    14
+#define o_rip3    15
+#define o_rip4    16
+#define o_drop0   17
+#define o_drop1   18
+
+// ---- views (VIEW.n) ----
+#define view_ego    0
+#define view_rock   1
+#define view_fish   2
+#define view_coins  3
+#define view_glint  4
+#define view_ripple 5
+#define view_drops  6
+#define view_icon   7
+
+// ---- sounds (SOUND.n) and pictures (PIC.n) ----
+#define snd_music  1
+#define snd_drag   2
+#define snd_splash 3
+
+// ---- flags ----
+#define f_music_done   f20
+#define f_rock_moved   f21
+#define f_rock_done    f22
+#define f_rock_msg     f23
+#define f_drag_done    f24
+#define f_coins_seen   f25
+#define f_coins_taken  f26
+#define f_leg1         f30
+#define f_leg2         f31
+#define f_leg3         f32
+#define f_leg4         f33
+#define f_splash_done  f34
+#define f_rip0         f36
+#define f_rip1         f37
+#define f_rip2         f38
+#define f_rip3         f39
+#define f_rip4         f40
+#define f_drop0        f41
+#define f_drop1        f42
+
+// ---- variables ----
+#define pic          v50
+#define ego_step     v51
+#define ego_cycle    v52
+#define one          v53
+#define glint_cycle  v54
+#define fish_state   v60
+#define fish_wait    v61
+#define fx           v62
+#define fy           v63
+#define fq           v64
+#define fdir         v65
+#define tx           v66
+#define ty           v67
+#define fstep        v68
+#define lx           v69
+#define rip_timer    v70
+#define rip_next     v71
+#define rx           v72
+#define ry           v73

@@ -1,0 +1,1108 @@
+<title>GS/AGI Demo Mockups</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one review column. Each section asks for a single approval; the playable screen leads. */
+:root {
+  --bg: #eef0f3;
+  --panel: #ffffff;
+  --fg: #14181f;
+  --muted: #566070;
+  --line: #d4d9e1;
+  --accent: #2748d8;
+  --accent-fg: #ffffff;
+  --bezel: #0d0f13;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111419; --panel: #1a1e26; --fg: #e6e9ef; --muted: #9aa4b5;
+    --line: #2d3440; --accent: #8fa6ff; --accent-fg: #0f1320; --bezel: #05060a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111419; --panel: #1a1e26; --fg: #e6e9ef; --muted: #9aa4b5;
+  --line: #2d3440; --accent: #8fa6ff; --accent-fg: #0f1320; --bezel: #05060a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
+h1 { font-size: 28px; line-height: 1.15; margin: 0 0 8px; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 4px; font-weight: 600; text-wrap: balance; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 64ch; }
+.sub { color: var(--muted); max-width: 66ch; margin-bottom: 14px; }
+section { min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+code, .mono { font-family: var(--font-mono); font-size: 0.88em; }
+.tag { display: inline-block; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.08em; padding: 1px 7px; border-radius: 4px; background: var(--accent); color: var(--accent-fg); vertical-align: 2px; margin-left: 6px; }
+
+.bar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 12px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.seg button {
+  font: inherit; font-size: 13.5px; padding: 6px 12px; border: 0; background: transparent; color: var(--fg); cursor: pointer;
+  border-right: 1px solid var(--line);
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+.plain { font: inherit; font-size: 13.5px; padding: 6px 12px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 6px; cursor: pointer; }
+.seg button:focus-visible, .plain:focus-visible, .dpad button:focus-visible, .cmd button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.bezel { background: var(--bezel); padding: 12px; border-radius: 10px; }
+.screen { display: block; width: 100%; aspect-ratio: 4 / 3; image-rendering: pixelated; background: #000; outline: none; border-radius: 2px; }
+.screen:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.under { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; margin-top: 12px; }
+.cmd { display: flex; gap: 8px; flex: 1 1 280px; min-width: 0; }
+.cmd input {
+  flex: 1; min-width: 0; font-family: var(--font-mono); font-size: 14px; padding: 8px 10px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 6px;
+}
+.cmd button { font: inherit; font-size: 14px; padding: 8px 14px; border: 0; border-radius: 6px; background: var(--accent); color: var(--accent-fg); cursor: pointer; }
+.dpad { display: grid; grid-template-columns: repeat(3, 40px); grid-template-rows: repeat(2, 36px); gap: 4px; }
+.dpad button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 6px; cursor: pointer; touch-action: none; }
+.dpad .u { grid-column: 2; grid-row: 1; } .dpad .l { grid-column: 1; grid-row: 2; }
+.dpad .d { grid-column: 2; grid-row: 2; } .dpad .r { grid-column: 3; grid-row: 2; }
+.hint { color: var(--muted); font-size: 13.5px; margin-top: 10px; max-width: 70ch; }
+.readout { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+
+.try { margin-top: 14px; display: grid; gap: 6px; }
+.try ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+
+.pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.sw { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.sw i { width: 38px; height: 38px; border-radius: 5px; flex: none; border: 1px solid rgba(128,128,128,0.45); }
+.sw span { display: block; min-width: 0; font-size: 13px; line-height: 1.3; }
+.sw strong { font-weight: 500; }
+.sw .mono { color: var(--muted); }
+
+.sheetwrap { overflow-x: auto; }
+.sheet { display: grid; grid-template-columns: auto repeat(4, 96px); gap: 6px 10px; align-items: end; justify-content: start; width: max-content; }
+.sheet canvas { width: 96px; height: 192px; image-rendering: pixelated; background: #5c8f3a; border-radius: 4px; display: block; }
+.sheet .h { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); text-align: center; }
+.sheet .r { font-size: 12px; color: var(--muted); align-self: center; }
+.scales { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: flex-end; padding: 18px 16px 12px; border-radius: 6px; background: #5c8f3a; }
+.scales figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.scales canvas { image-rendering: pixelated; display: block; }
+.scales figcaption { font-family: var(--font-mono); font-size: 11.5px; color: #0d1a07; text-align: center; line-height: 1.3; }
+
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 560px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 500; }
+td:first-child { white-space: nowrap; font-family: var(--font-mono); font-size: 12.5px; }
+
+details { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+summary { padding: 12px 16px; cursor: pointer; font-weight: 500; }
+details pre, pre.code { margin: 0; padding: 0 16px 16px; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; overflow-x: auto; color: var(--muted); }
+pre.code { padding: 12px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; color: var(--fg); margin-top: 12px; }
+ul.check { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+@media (max-width: 520px) { h1 { font-size: 23px; } .bezel { padding: 6px; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>GS/AGI demo: asset mockups <span class="tag">round 4</span></h1>
+    <p class="lede">Drawn with what the engine will really have: 320&times;200 pixels, 16 colours from a 12-bit palette, an 8&times;8 font, vector shapes. New this round: the pond in the clearing is alive. The water shimmers, ripples spread across it, and every few seconds a fish leaps out with a splash and a small plip. Open room 2 and wait.</p>
+  </header>
+
+  <section id="rooms">
+    <h2>The two screens</h2>
+    <p class="sub">Click the screen, then walk with the arrow keys (or the pad). She gets smaller toward the horizon and her steps shorten with her. Click or press a key once to start the audio. Room 2 has the pond (browsers wait for that). Try the rock puzzle below, then walk off the east edge of the meadow into the clearing.</p>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Room">
+        <button type="button" id="tab1" aria-pressed="true">Room 1: meadow</button>
+        <button type="button" id="tab2" aria-pressed="false">Room 2: clearing</button>
+      </div>
+      <div class="seg" role="group" aria-label="Overlay">
+        <button type="button" id="ov0" aria-pressed="true">Final</button>
+        <button type="button" id="ov1" aria-pressed="false">Walk map</button>
+        <button type="button" id="ov2" aria-pressed="false">Depth and scale</button>
+      </div>
+      <button type="button" class="plain" id="reset">Reset puzzle</button>
+      <button type="button" class="plain" id="snd" aria-pressed="true">Sound: on</button>
+    </div>
+    <div class="bezel"><canvas id="screen" class="screen" width="320" height="200" tabindex="0" aria-label="Playable mockup of the game screen. Use the arrow keys to walk."></canvas></div>
+    <div class="legend" id="legend" hidden></div>
+    <p class="readout" id="readout"></p>
+    <div class="under">
+      <form class="cmd" id="cmdform" autocomplete="off">
+        <input id="cmd" type="text" maxlength="38" placeholder="move rock" aria-label="Parser command" spellcheck="false">
+        <button type="submit">Enter</button>
+      </form>
+      <div class="dpad" aria-label="Walk pad">
+        <button type="button" class="u" data-d="N" aria-label="Walk up">&uarr;</button>
+        <button type="button" class="l" data-d="W" aria-label="Walk left">&larr;</button>
+        <button type="button" class="d" data-d="S" aria-label="Walk down">&darr;</button>
+        <button type="button" class="r" data-d="E" aria-label="Walk right">&rarr;</button>
+      </div>
+    </div>
+    <div class="panel try">
+      <strong>Try the rock puzzle (meadow)</strong>
+      <ol>
+        <li><code>look rock</code> to see it is loose.</li>
+        <li><code>move rock</code> while standing near it. Try it from across the screen first to see the &ldquo;too far&rdquo; reply.</li>
+        <li>The rock slides left with a dragging sound and leaves a hole. It blocks walking in its new spot.</li>
+        <li><code>look hole</code> to look in. The coins appear in the hole.</li>
+        <li><code>get coins</code> to pick them up, then <code>inventory</code>.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="person">
+    <h2>The heroine</h2>
+    <p class="sub">24&times;48 pixels with a black outline, a dress with a defined waist and flared skirt, long hair, and shading in a second dress tone and a skin shadow. That is three times the pixel count of the first sketch, which only the Super Hi-Res screen can carry cleanly. Four directions, three poses each (stand, left foot, right foot); the walk plays stand, left, stand, right. Left is the right-facing art mirrored. Shown at 4&times;.</p>
+    <div class="panel"><div class="sheetwrap"><div class="sheet" id="sheet"></div></div></div>
+  </section>
+
+  <section id="scaling">
+    <h2>Perspective scaling</h2>
+    <p class="sub">She scales with her distance up the screen, from 50% at the horizon line to 100% at the bottom edge. The same 24&times;48 art is resampled at draw time, so it costs no extra memory. Shown at 3&times; for the sizes she will actually have on the real screen, feet on a common line.</p>
+    <div class="panel" style="padding:0"><div class="scales" id="scales"></div></div>
+    <p class="hint">Her walking step shrinks with her (3 pixels at full size, about 1.5 at half), so she doesn&rsquo;t seem to glide faster when far away. Trees and rocks stay a fixed size.</p>
+  </section>
+
+  <section id="palette">
+    <h2>Palette</h2>
+    <p class="sub">16 colours as IIgs 12-bit values (<code>$0RGB</code>). Re-planned for her: dress shade and gold are new, and the old shallow water and light foliage colours were folded into sky and meadow green to make room. Black is index 0 and white is 15, which the text and boxes assume.</p>
+    <div class="panel"><div class="pal" id="pal"></div></div>
+  </section>
+
+  <section id="mechanic">
+    <h2>How the rock mechanic works in the engine</h2>
+    <p class="sub">Nothing new is needed in the VM. The rock is an animated object, not part of the background picture, so it can move. The hole is a small vector picture laid over the background when the rock moves. The same flags and distance check that the rest of the game uses decide what you can do.</p>
+    <div class="panel">
+      <ul class="check">
+        <li><strong>Rock as an object.</strong> A view with its own position. <code>move.obj</code> slides it 32 pixels, and its walk-blocking footprint moves with it.</li>
+        <li><strong>Hole as an overlay.</strong> <code>overlay.pic</code> draws a tiny picture (two ellipses and a rim) when flag <code>rock_moved</code> is set. It is saved with the room state.</li>
+        <li><strong>Reach check.</strong> <code>distance(ego, rock, v)</code>: if v is over 46 the reply is &ldquo;You are too far away.&rdquo;</li>
+        <li><strong>Coins.</strong> <code>look hole</code> sets <code>coins_seen</code> and draws the coins into the hole. <code>get coins</code> checks the reach, calls <code>get(gold_coins)</code>, erases them and adds 5 to the score. Looking again says it is empty.</li>
+        <li><strong>Sound.</strong> <code>move rock</code> also calls <code>sound(drag, f_drag_done)</code>. The ambient tune is started by <code>LOGIC.0</code> and restarted whenever its done-flag is set, which is how AGI loops music.</li>
+      </ul>
+      <pre class="code">if (said(move, rock)) {
+  if (isset(rock_moved)) { print("You already moved it."); }
+  else {
+    distance(ego, rock, v50);
+    if (v50 > 46) { print("You are too far away."); }
+    else {
+      set(rock_moved);
+      move.obj(rock, 80, 168, 2, f_rock_done);
+      overlay.pic(hole);
+      print("You heave the rock aside. It leaves a shallow hole in the ground.");
+    }
+  }
+}</pre>
+    </div>
+  </section>
+
+  <section id="pond">
+    <h2>Pond life</h2>
+    <p class="sub">Room 2 only. Eight water glints cycle through three frames, a ripple ring spreads every couple of seconds, and at random intervals (about 4 to 9 seconds) a fish leaps up to 24 pixels out of the water, turns over and splashes back in. The fish has three poses, shown below at 4&times; and mirrored when it jumps left. Every moving piece is an ordinary animated object, so it costs nothing new in the engine and runs the same on the IIgs and on the Mac.</p>
+    <div class="panel">
+      <div class="sheetwrap"><div class="sheet" id="fishsheet" style="grid-template-columns:auto repeat(3,96px)"></div></div>
+      <ul class="check" style="margin-top:14px">
+        <li><strong>Glints:</strong> 8 objects, view of 3 cels (small line, long line, pale line), <code>cycle_time</code> 4 cycles, each starting on a different cel so the water never pulses in step.</li>
+        <li><strong>Ripples:</strong> a ring view of 9 cels (expanding, white then pale blue) drawn at a random pond position by the room logic; fish take-off and landing add one each.</li>
+        <li><strong>Fish:</strong> one object. A countdown variable runs while you are in the room; at zero the logic picks a start point and a direction with <code>random</code>, then plays four <code>move.obj</code> legs (up, apex, down, landing) while it sets the cel to rising, level or falling.</li>
+        <li><strong>Sound:</strong> <code>sound(splash, f_splash_done)</code> at take-off. One effect covers the whole jump: a small splash, a gap while it is in the air, then a landing splash and a short rising plip.</li>
+      </ul>
+      <pre class="code">// LOGIC.2, once per cycle
+if (v70 > 0) { --v70; }                  // countdown to next jump
+if (v70 == 0 &amp;&amp; !isset(f_fish_up)) {
+  random(150, 230, v71);                 // start x
+  random(142, 151, v72);                 // start y
+  random(0, 1, v73);                     // direction
+  set(f_fish_up);
+  sound(splash, f_splash_done);
+  ...position(fish, v71, v72), then 4 move.obj legs...
+}
+if (isset(f_fish_done)) { reset(f_fish_up); erase(fish); random(60, 135, v70); }</pre>
+    </div>
+  </section>
+
+  <section id="sound">
+    <h2>Sound</h2>
+    <p class="sub">Both sounds are note lists: pitch, volume and length in 1/60 s ticks, grouped into generators, exactly the <code>SOUND.n</code> layout the engine already reads. On the IIgs each generator is an Ensoniq DOC oscillator; on the Mac it is a small software oscillator. This page plays them with the same sequencing rule as the engine&rsquo;s <code>sound.c</code>, so what you hear is the arrangement that ships. The real hardware will sound plainer than this browser synth, which smooths note starts and ends.</p>
+    <div class="bar">
+      <button type="button" class="plain" id="playdrag">Play drag sound</button>
+      <button type="button" class="plain" id="playmusic">Restart music</button>
+      <span class="readout" id="audiostate" style="margin:0"></span>
+    </div>
+    <div class="panel tbl">
+      <table>
+        <thead><tr><th>Sound</th><th>Kind</th><th>Generators</th><th>Notes</th><th>Length</th><th>File size</th></tr></thead>
+        <tbody id="sndrows"></tbody>
+      </table>
+    </div>
+    <p class="hint">Music uses generators 0 to 3 and effects use 4 and 5, so a sound effect never cuts the music off. Effects share one slot, so a splash replaces a drag still playing. The format gains one byte for this (kind: effect or music), and one more waveform id for noise. Waveform ids: 0 square, 1 triangle, 2 sawtooth, 3 noise, 4 sine.</p>
+  </section>
+
+  <section id="words">
+    <h2>What the parser understands</h2>
+    <p class="sub">Every reply in the demo, so you can approve the wording. Articles and &ldquo;at&rdquo; / &ldquo;in&rdquo; are ignored. Unknown words get the classic reply.</p>
+    <div class="panel tbl">
+      <table>
+        <thead><tr><th>You type</th><th>Where</th><th>Reply</th></tr></thead>
+        <tbody id="wordrows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="source">
+    <h2>Picture source and size</h2>
+    <p class="sub">What the picture compiler will read for the room on screen, and how large the finished picture resource is.</p>
+    <details>
+      <summary id="srcsum">Vector script</summary>
+      <pre id="srcpre"></pre>
+    </details>
+  </section>
+
+  <section id="approve">
+    <h2>What approving this locks in</h2>
+    <div class="panel">
+      <ul class="check">
+        <li>The 16-colour palette above, with its roles.</li>
+        <li>The shapes, positions and sizes of every tree and rock, the two backdrops, the exits and what blocks walking.</li>
+        <li>The heroine: 24&times;48 art, outline, colours, four directions, three walk poses.</li>
+        <li>Perspective scaling from 50% at the horizon to 100% at the bottom, with proportional step length.</li>
+        <li>The movable rock, the hole, the gold coins (look, then take) and the 5-point score for them.</li>
+        <li>The drag sound and the ambient music.</li>
+        <li>The pond: water glints, ripples, the leaping fish and its splash sound.</li>
+        <li>The screen layout (status line top, message box, input line bottom) and all the parser text.</li>
+      </ul>
+    </div>
+    <p class="hint">Tell me what to change and I will update this page. The approved values become the game&rsquo;s source files unchanged.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+'use strict';
+var W = 320, H = 200, T = 255, HORIZON = 92, GROUND_BOTTOM = 184;
+var SW = 24, SH = 48, NEAR = 46;
+var FONT_HEX = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000183C3C1818001800363600000000000036367F367F3636000C3E031E301F0C00006333180C6663001C361C6E3B336E000606030000000000180C0606060C1800060C1818180C060000663CFF3C660000000C0C3F0C0C000000000000000C0C060000003F0000000000000000000C0C006030180C060301003E63737B6F673E000C0E0C0C0C0C3F001E33301C06333F001E33301C30331E00383C36337F3078003F031F3030331E001C06031F33331E003F3330180C0C0C001E33331E33331E001E33333E30180E00000C0C00000C0C00000C0C00000C0C06180C0603060C180000003F00003F0000060C1830180C06001E3330180C000C003E637B7B7B031E000C1E33333F3333003F66663E66663F003C66030303663C001F36666666361F007F46161E16467F007F46161E16060F003C66030373667C003333333F333333001E0C0C0C0C0C1E007830303033331E006766361E366667000F06060646667F0063777F7F6B63630063676F7B736363001C36636363361C003F66663E06060F001E3333333B1E38003F66663E366667001E33070E38331E003F2D0C0C0C0C1E003333333333333F0033333333331E0C006363636B7F7763006363361C1C3663003333331E0C0C1E007F6331184C667F001E06060606061E0003060C18306040001E18181818181E00081C36630000000000000000000000FF0C0C18000000000000001E303E336E000706063E66663B0000001E3303331E003830303e33336E0000001E333f031E001C36060f06060F0000006E33333E301F0706366E666667000C000E0C0C0C1E00300030303033331E070666361E3667000E0C0C0C0C0C1E000000337F7F6B630000001F333333330000001E3333331E0000003B66663E060F00006E33333E307800003B6E66060F0000003E031E301F00080C3E0C0C2C18000000333333336E0000003333331E0C000000636B7F7F3600000063361C36630000003333333E301F00003F190C263F00380C0C070C0C38001818180018181800070C0C380C0C07006E3B0000000000000000000000000000";
+
+/* ---------- palette: 12-bit $0RGB ---------- */
+var PAL = [
+  [0x000, 'Black', 'outlines, eyes, shoes'],
+  [0x9DF, 'Sky', 'sky, pond shallows'],
+  [0x911, 'Dress shade', 'dress folds and hem'],
+  [0x38B, 'Deep water', 'pond'],
+  [0x7C4, 'Meadow', 'grass, canopy highlights'],
+  [0x4A3, 'Hills', 'hills, tree shadows'],
+  [0x261, 'Foliage', 'tree canopy'],
+  [0xFD2, 'Gold', 'coins'],
+  [0x852, 'Trunk', 'trunks, hair, skin shadow'],
+  [0x531, 'Bark', 'trunk shade, hair, hole'],
+  [0xAAA, 'Rock light', 'rock highlights'],
+  [0x777, 'Rock', 'rock body'],
+  [0x444, 'Rock dark', 'rock shade'],
+  [0xFC9, 'Sand', 'path, skin'],
+  [0xD33, 'Red', 'dress, lips, flowers'],
+  [0xFFF, 'White', 'clouds, sash, text, boxes']
+];
+var PALRGB = PAL.map(function (p) { var v = p[0]; return [((v >> 8) & 15) * 17, ((v >> 4) & 15) * 17, (v & 15) * 17]; });
+function hex3(v) { return '$0' + v.toString(16).toUpperCase().padStart(3, '0').slice(-3); }
+
+/* ---------- rasterizers (the operations the PIC decoder will have) ---------- */
+function mk(v, w, h) { w = w || W; h = h || H; var b = new Uint8Array(w * h); b.fill(v); b.w = w; b.h = h; return b; }
+function put(b, x, y, c) { var w = b.w || W, h = b.h || H; if (x >= 0 && x < w && y >= 0 && y < h) b[y * w + x] = c; }
+function fillPoly(b, p, c) {
+  var n = p.length / 2, minY = 9999, maxY = -1, i, y, k, x, h = b.h || H;
+  for (i = 0; i < n; i++) { if (p[2 * i + 1] < minY) minY = p[2 * i + 1]; if (p[2 * i + 1] > maxY) maxY = p[2 * i + 1]; }
+  for (y = Math.max(0, minY); y <= Math.min(h - 1, maxY); y++) {
+    var xs = [];
+    for (i = 0; i < n; i++) {
+      var j = (i + 1) % n, x1 = p[2 * i], y1 = p[2 * i + 1], x2 = p[2 * j], y2 = p[2 * j + 1];
+      if ((y1 <= y && y2 > y) || (y2 <= y && y1 > y)) xs.push(x1 + (y - y1) * (x2 - x1) / (y2 - y1));
+    }
+    xs.sort(function (a, b2) { return a - b2; });
+    for (k = 0; k + 1 < xs.length; k += 2) for (x = Math.round(xs[k]); x < Math.round(xs[k + 1]); x++) put(b, x, y, c);
+  }
+}
+function fillEllipse(b, cx, cy, rx, ry, c) {
+  for (var y = cy - ry; y <= cy + ry; y++) {
+    var t = (y - cy) / ry, dx = rx * Math.sqrt(Math.max(0, 1 - t * t));
+    for (var x = Math.round(cx - dx); x <= Math.round(cx + dx); x++) put(b, x, y, c);
+  }
+}
+function line(b, x0, y0, x1, y1, c) {
+  var dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1, e = dx + dy;
+  for (;;) {
+    put(b, x0, y0, c);
+    if (x0 === x1 && y0 === y1) break;
+    var e2 = 2 * e;
+    if (e2 >= dy) { e += dy; x0 += sx; }
+    if (e2 <= dx) { e += dx; y0 += sy; }
+  }
+}
+function flood(b, x, y, c) {
+  if (x < 0 || y < 0 || x >= W || y >= H) return;
+  var old = b[y * W + x]; if (old === c) return;
+  var st = [x, y];
+  while (st.length) {
+    var yy = st.pop(), xx = st.pop();
+    if (xx < 0 || yy < 0 || xx >= W || yy >= H || b[yy * W + xx] !== old) continue;
+    b[yy * W + xx] = c;
+    st.push(xx + 1, yy, xx - 1, yy, xx, yy + 1, xx, yy - 1);
+  }
+}
+/* ops: c colour | p polygon | e ellipse | l polyline | L closed polyline | f flood | d dot */
+function run(b, ops) {
+  var col = 0;
+  ops.forEach(function (o) {
+    var op = o[0], i;
+    if (op === 'c') col = o[1];
+    else if (op === 'p') fillPoly(b, o.slice(1), col);
+    else if (op === 'e') fillEllipse(b, o[1], o[2], o[3], o[4], col);
+    else if (op === 'l' || op === 'L') {
+      var n = (o.length - 1) / 2;
+      for (i = 0; i < n - 1; i++) line(b, o[1 + 2 * i], o[2 + 2 * i], o[3 + 2 * i], o[4 + 2 * i], col);
+      if (op === 'L') line(b, o[1 + 2 * (n - 1)], o[2 + 2 * (n - 1)], o[1], o[2], col);
+    }
+    else if (op === 'f') flood(b, o[1], o[2], col);
+    else if (op === 'd') put(b, o[1], o[2], col);
+  });
+}
+function opBytes(o) {
+  var op = o[0];
+  if (op === 'c') return 2;
+  if (op === 'p' || op === 'l' || op === 'L') return 2 + 3 * ((o.length - 1) / 2);
+  if (op === 'e') return 7;
+  return 4;
+}
+function opText(o) {
+  var n = { c: 'color', p: 'poly', e: 'ellipse', l: 'line', L: 'loop', f: 'fill', d: 'dot' }[o[0]];
+  return n + ' ' + o.slice(1).join(' ');
+}
+
+/* ---------- scene pieces ---------- */
+function tree(x, y, s) {
+  var r = function (v) { return Math.round(v * s); }, tw = Math.max(3, r(5)), th = r(38), cy = y - th - r(14);
+  return {
+    kind: 'tree', x: x, baseY: y,
+    shadow: [['c', 5], ['e', x + r(6), y, r(26), Math.max(2, r(5))]],
+    vis: [
+      ['c', 8], ['p', x - tw, y, x + tw, y, x + tw - 1, y - th, x - tw + 1, y - th],
+      ['c', 9], ['p', x + 1, y, x + tw, y, x + tw - 1, y - th, x + 1, y - th],
+      ['c', 6], ['e', x, cy, r(30), r(24)], ['e', x - r(17), cy + r(8), r(17), r(14)], ['e', x + r(18), cy + r(6), r(17), r(14)],
+      ['c', 4], ['e', x - r(6), cy - r(4), r(18), r(13)], ['e', x - r(19), cy + r(6), r(9), r(7)], ['e', x + r(11), cy - r(10), r(11), r(8)]
+    ],
+    ctl: [['c', 1], ['p', x - tw - 1, y - 3, x + tw + 1, y - 3, x + tw + 1, y + 1, x - tw - 1, y + 1]]
+  };
+}
+function rock(x, y, s) {
+  var r = function (v) { return Math.round(v * s); };
+  return {
+    kind: 'rock', x: x, baseY: y,
+    shadow: [['c', 5], ['e', x + r(4), y + 1, r(22), Math.max(2, r(4))]],
+    vis: [
+      ['c', 11], ['p', x - r(18), y, x - r(14), y - r(12), x - r(4), y - r(20), x + r(8), y - r(18), x + r(17), y - r(8), x + r(19), y],
+      ['c', 10], ['p', x - r(14), y - r(12), x - r(4), y - r(20), x + r(2), y - r(17), x - r(6), y - r(8)],
+      ['c', 12], ['p', x + r(19), y, x + r(17), y - r(8), x + r(6), y - r(6), x + r(4), y]
+    ],
+    ctl: [['c', 1], ['p', x - r(17), y - r(6), x + r(18), y - r(6), x + r(18), y + 1, x - r(17), y + 1]]
+  };
+}
+function flowers(list) {
+  var ops = [];
+  list.forEach(function (f, i) { ops.push(['c', i % 2 ? 15 : 14], ['l', f[0], f[1], f[0] + 1, f[1]], ['l', f[0], f[1] + 1, f[0] + 1, f[1] + 1]); });
+  return ops;
+}
+function skyAndGround(clouds) {
+  var ops = [['c', 1], ['p', 0, 8, 320, 8, 320, 80, 0, 80], ['c', 15]];
+  clouds.forEach(function (c) { ops.push(['e', c[0], c[1], c[2], c[3]]); });
+  ops.push(['c', 5], ['p', 0, 80, 0, 66, 38, 58, 88, 68, 140, 60, 196, 70, 252, 58, 320, 66, 320, 80]);
+  ops.push(['c', 4], ['p', 0, 80, 320, 80, 320, 184, 0, 184]);
+  return ops;
+}
+/* the hole under the rock, drawn as a small overlay picture */
+function holeOps(x, y, coins) {
+  var ops = [['c', 8], ['e', x, y, 14, 5], ['c', 9], ['e', x, y + 1, 12, 4], ['c', 0], ['e', x, y + 2, 9, 3]];
+  if (coins) ops.push(['c', 8], ['e', x - 4, y + 3, 4, 2], ['e', x + 3, y + 3, 4, 2], ['e', x - 1, y + 1, 4, 2],
+    ['c', 7], ['e', x - 4, y + 2, 3, 1], ['e', x + 3, y + 2, 3, 1], ['e', x - 1, y, 3, 1], ['c', 15], ['d', x - 2, y]);
+  return ops;
+}
+
+var ROCK_HOME = 112, ROCK_MOVED = 80, ROCK_Y = 168;
+var ROOMS = {
+  1: {
+    name: 'Room 1: meadow',
+    bg: skyAndGround([[58, 30, 24, 6], [76, 25, 16, 6], [236, 42, 28, 6], [254, 36, 15, 5], [150, 58, 12, 3]])
+      .concat([['c', 13], ['L', 130, 183, 158, 160, 190, 138, 240, 122, 319, 114, 319, 140, 262, 150, 222, 166, 196, 183], ['f', 230, 150]])
+      .concat(flowers([[24, 100], [40, 128], [96, 142], [120, 112], [210, 100], [150, 176], [290, 172], [30, 170], [300, 96], [250, 176]])),
+    defs: [['tree', 62, 152, 1.0], ['tree', 262, 106, 0.7], ['tree', 152, 98, 0.55], ['rock', ROCK_HOME, ROCK_Y, 0.9], ['rock', 232, 176, 1.3], ['rock', 205, 153, 0.45]],
+    ctl: [['c', 2], ['p', 312, HORIZON, 320, HORIZON, 320, 184, 312, 184]],
+    names: ['tree', 'tree', 'tree', 'rock', 'boulder', 'small stone'],
+    start: [150, 172]
+  },
+  2: {
+    name: 'Room 2: clearing',
+    bg: skyAndGround([[90, 28, 26, 6], [110, 23, 14, 5], [250, 34, 22, 5], [200, 50, 13, 3]])
+      .concat([['c', 13], ['L', 0, 150, 52, 152, 90, 162, 104, 183, 0, 183], ['f', 30, 170]])
+      .concat([['c', 13], ['e', 186, 142, 96, 36], ['c', 1], ['e', 186, 142, 84, 29], ['c', 3], ['e', 188, 146, 62, 19],
+        ['c', 15], ['l', 150, 134, 166, 132], ['l', 214, 150, 232, 148], ['l', 176, 156, 190, 157],
+        ['c', 4], ['e', 160, 142, 8, 2], ['e', 214, 152, 7, 2], ['e', 196, 136, 6, 2], ['c', 15], ['d', 196, 135]])
+      .concat(flowers([[20, 112], [70, 100], [140, 178], [296, 120], [250, 100], [14, 134]])),
+    defs: [['tree', 278, 100, 0.9], ['tree', 44, 118, 0.8], ['tree', 110, 96, 0.6], ['tree', 298, 172, 1.0], ['rock', 128, 178, 0.9], ['rock', 66, 140, 0.7], ['rock', 238, 106, 0.6]],
+    ctl: [['c', 1], ['e', 186, 142, 84, 29], ['c', 2], ['p', 0, HORIZON, 8, HORIZON, 8, 184, 0, 184]],
+    names: ['tree', 'tree', 'tree', 'tree', 'rock', 'rock', 'rock'],
+    start: [20, 168]
+  }
+};
+
+/* ---------- game state ---------- */
+var st = { room: 1, x: 150, y: 172, dir: 'S', cel: 0, step: 0, acc: 0, tick: 0, msg: null, icon: null,
+  hasStone: false, moved: false, rockX: ROCK_HOME, slide: 0, coins: false, coinsSeen: false };
+var keys = [], overlay = 0;
+var pond = { t: 0, wait: 36, fish: null, ripples: [], drops: [] };
+var GLINTS = [[150, 134], [214, 150], [176, 156], [196, 136], [130, 146], [236, 142], [160, 150], [205, 144]];
+function inPond(x, y) { var dx = (x - 186) / 84, dy = (y - 142) / 29; return dx * dx + dy * dy < 1; }
+
+function bbox(b) {
+  var x0 = W, y0 = H, x1 = -1, y1 = -1;
+  for (var y = 0; y < H; y++) for (var x = 0; x < W; x++) if (b[y * W + x] !== T) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  return x1 < 0 ? null : [x0, y0, x1, y1];
+}
+function buildRoom(k) {
+  var R = ROOMS[k], bytes = 0;
+  R.objs = R.defs.map(function (d, i) {
+    var x = (k === 1 && i === 3) ? Math.round(st.rockX) : d[1];
+    return (d[0] === 'tree' ? tree : rock)(x, d[2], d[3]);
+  });
+  R.bgBuf = mk(0); run(R.bgBuf, R.bg);
+  R.holeOps = (k === 1 && st.moved) ? holeOps(ROCK_HOME, ROCK_Y, st.coinsSeen && !st.coins) : [];
+  run(R.bgBuf, R.holeOps);
+  R.objs.forEach(function (o) { run(R.bgBuf, o.shadow); });
+  R.ctlBuf = mk(0); run(R.ctlBuf, R.ctl);
+  R.objs.forEach(function (o) { o.buf = mk(T); run(o.buf, o.vis); o.box = bbox(o.buf); run(R.ctlBuf, o.ctl); });
+  R.bg.concat(R.ctl, R.holeOps).forEach(function (o) { bytes += opBytes(o); });
+  R.objs.forEach(function (o) { o.shadow.concat(o.vis, o.ctl).forEach(function (q) { bytes += opBytes(q); }); });
+  R.bytes = bytes + 1;
+}
+
+/* ---------- font ---------- */
+var FONT = new Uint8Array(1024);
+for (var fi = 0; fi < 1024; fi++) FONT[fi] = parseInt(FONT_HEX.substr(fi * 2, 2), 16);
+function glyphs(str, x, y, plot) {
+  for (var i = 0; i < str.length; i++) {
+    var ch = str.charCodeAt(i) & 127;
+    for (var gy = 0; gy < 8; gy++) for (var gx = 0; gx < 8; gx++) plot(x + i * 8 + gx, y + gy, !!(FONT[ch * 8 + gy] & (1 << gx)));
+  }
+}
+var fbuf = new Uint8Array(W * H);
+function rectFB(x1, y1, x2, y2, c) { for (var y = y1; y < y2; y++) for (var x = x1; x < x2; x++) if (x >= 0 && x < W && y >= 0 && y < H) fbuf[y * W + x] = c; }
+function frameFB(x1, y1, x2, y2, c) { rectFB(x1, y1, x2, y1 + 1, c); rectFB(x1, y2 - 1, x2, y2, c); rectFB(x1, y1, x1 + 1, y2, c); rectFB(x2 - 1, y1, x2, y2, c); }
+function textFB(str, x, y, fg, bg) {
+  glyphs(str, x, y, function (px, py, on) { if (px < 0 || px >= W || py < 0 || py >= H) return; if (on) fbuf[py * W + px] = fg; else if (bg >= 0) fbuf[py * W + px] = bg; });
+}
+function wrap(text, n) {
+  var out = [];
+  text.split('\n').forEach(function (para) {
+    var cur = '';
+    para.split(' ').forEach(function (w) {
+      if ((cur + ' ' + w).trim().length > n) { out.push(cur); cur = w; } else cur = (cur + ' ' + w).trim();
+    });
+    out.push(cur);
+  });
+  return out;
+}
+
+/* ---------- the heroine: 24x48, vector-drawn then outlined ---------- */
+function heroOps(dir, a) {
+  var s = a, l1 = a > 0 ? 2 : 0, l2 = a < 0 ? 2 : 0, k = 3 * a;
+  if (dir === 'S') return [
+    ['c', 9], ['p', 7, 3, 12, 0, 17, 3, 19, 10, 20, 20, 18, 26, 6, 26, 4, 20, 5, 10],
+    ['c', 8], ['e', 10, 4, 3, 2],
+    ['c', 13], ['p', 5, 17, 8, 18, 7, 28 + a, 4, 28 + a], ['p', 19, 17, 16, 18, 17, 28 - a, 20, 28 - a], ['e', 5, 29 + a, 1, 2], ['e', 19, 29 - a, 1, 2],
+    ['p', 9, 41, 12, 41, 12, 46 - l1, 9, 46 - l1], ['p', 13, 41, 16, 41, 16, 46 - l2, 13, 46 - l2],
+    ['c', 0], ['p', 8, 45 - l1, 12, 45 - l1, 12, 48 - l1, 8, 48 - l1], ['p', 13, 45 - l2, 17, 45 - l2, 17, 48 - l2, 13, 48 - l2],
+    ['c', 14], ['p', 7, 17, 17, 17, 19, 21, 16, 26, 20, 34, 22 + s, 41, 2 + s, 41, 4, 34, 8, 26, 5, 21],
+    ['c', 2], ['p', 12, 28, 17, 26, 20, 34, 22 + s, 41, 14, 41], ['e', 9, 23, 3, 1], ['e', 15, 23, 3, 1],
+    ['c', 15], ['p', 8, 26, 16, 26, 15, 28, 9, 28],
+    ['c', 13], ['p', 10, 13, 14, 13, 14, 17, 10, 17], ['p', 10, 17, 14, 17, 12, 20],
+    ['c', 8], ['p', 10, 13, 14, 13, 14, 15, 10, 15],
+    ['c', 13], ['e', 12, 8, 5, 6],
+    ['c', 9], ['p', 7, 8, 7, 3, 12, 1, 17, 3, 17, 8, 15, 5, 11, 4, 9, 6],
+    ['c', 0], ['d', 10, 8], ['d', 14, 8],
+    ['c', 14], ['l', 11, 12, 13, 12]
+  ];
+  if (dir === 'N') return [
+    ['c', 13], ['p', 5, 17, 8, 18, 7, 28 + a, 4, 28 + a], ['p', 19, 17, 16, 18, 17, 28 - a, 20, 28 - a], ['e', 5, 29 + a, 1, 2], ['e', 19, 29 - a, 1, 2],
+    ['p', 9, 41, 12, 41, 12, 46 - l1, 9, 46 - l1], ['p', 13, 41, 16, 41, 16, 46 - l2, 13, 46 - l2],
+    ['c', 0], ['p', 8, 45 - l1, 12, 45 - l1, 12, 48 - l1, 8, 48 - l1], ['p', 13, 45 - l2, 17, 45 - l2, 17, 48 - l2, 13, 48 - l2],
+    ['c', 14], ['p', 7, 17, 17, 17, 19, 21, 16, 26, 20, 34, 22 + s, 41, 2 + s, 41, 4, 34, 8, 26, 5, 21],
+    ['c', 2], ['p', 12, 28, 17, 26, 20, 34, 22 + s, 41, 14, 41],
+    ['c', 15], ['p', 8, 26, 16, 26, 15, 28, 9, 28], ['e', 9, 27, 2, 1], ['e', 15, 27, 2, 1],
+    ['c', 9], ['e', 12, 8, 6, 7], ['p', 6, 10, 18, 10, 20, 20, 19, 29, 5, 29, 4, 20],
+    ['c', 8], ['e', 10, 5, 2, 3], ['p', 9, 14, 11, 14, 11, 26, 9, 26]
+  ];
+  return [
+    ['c', 9], ['p', 6, 4, 11, 0, 16, 2, 17, 8, 14, 14, 12, 24, 5, 27, 4, 20, 6, 12],
+    ['c', 8], ['e', 10, 4, 3, 2],
+    ['c', 13], ['p', 12, 13, 15, 13, 15, 17, 12, 17],
+    ['c', 8], ['p', 12, 18, 15, 18, 15 - k, 29, 12 - k, 29],
+    ['p', 10, 41, 13, 41, 13 - k, 46, 10 - k, 46],
+    ['c', 13], ['p', 12, 41, 15, 41, 15 + k, 46, 12 + k, 46],
+    ['c', 0], ['p', 9 - k, 45, 13 - k, 45, 13 - k, 48, 9 - k, 48], ['p', 12 + k, 45, 17 + k, 45, 17 + k, 48, 12 + k, 48],
+    ['c', 14], ['p', 10, 17, 15, 17, 19, 21, 18, 24, 14, 27, 17, 33, 20 + s, 41, 3 + s, 41, 6, 33, 10, 27, 9, 22],
+    ['c', 2], ['p', 3 + s, 41, 6, 33, 10, 27, 12, 27, 11, 41],
+    ['c', 15], ['p', 10, 26, 14, 26, 15, 28, 10, 28],
+    ['c', 13], ['p', 11, 18, 14, 18, 13 + k, 29, 10 + k, 29], ['e', 12 + k, 30, 1, 2],
+    ['e', 14, 8, 4, 6], ['p', 17, 8, 19, 10, 17, 11],
+    ['c', 9], ['p', 10, 7, 11, 2, 16, 1, 18, 4, 16, 5, 13, 4, 11, 8],
+    ['c', 0], ['d', 16, 7], ['c', 14], ['d', 17, 11]
+  ];
+}
+function heroCell(dir, cel) {
+  var a = cel === 1 ? 1 : cel === 2 ? -1 : 0, mirror = dir === 'W', d = mirror ? 'E' : dir;
+  var b = mk(T, SW, SH); run(b, heroOps(d, a));
+  var o = mk(T, SW, SH), x, y;
+  for (y = 0; y < SH; y++) for (x = 0; x < SW; x++) {
+    var v = b[y * SW + x];
+    if (v !== T) o[y * SW + x] = v;
+    else if ((y > 0 && b[(y - 1) * SW + x] !== T) || (y < SH - 1 && b[(y + 1) * SW + x] !== T) || (x > 0 && b[y * SW + x - 1] !== T) || (x < SW - 1 && b[y * SW + x + 1] !== T)) o[y * SW + x] = 0;
+  }
+  if (mirror) { var m = mk(T, SW, SH); for (y = 0; y < SH; y++) for (x = 0; x < SW; x++) m[y * SW + x] = o[y * SW + (SW - 1 - x)]; return m; }
+  return o;
+}
+var CELLS = {};
+['S', 'N', 'E', 'W'].forEach(function (d) { CELLS[d] = [0, 1, 2].map(function (c) { return heroCell(d, c); }); });
+function scaleAt(y) { var t = Math.max(0, Math.min(1, (y - HORIZON) / (GROUND_BOTTOM - HORIZON))); return 0.5 + 0.5 * t; }
+var scaledCache = {};
+function scaled(dir, cel, s) {
+  var dw = Math.max(1, Math.round(SW * s)), dh = Math.max(1, Math.round(SH * s)), key = dir + cel + '_' + dw;
+  if (scaledCache[key]) return scaledCache[key];
+  var src = CELLS[dir][cel], out = mk(T, dw, dh);
+  for (var y = 0; y < dh; y++) for (var x = 0; x < dw; x++) out[y * dw + x] = src[Math.min(SH - 1, Math.floor((y + 0.5) * SH / dh)) * SW + Math.min(SW - 1, Math.floor((x + 0.5) * SW / dw))];
+  scaledCache[key] = out;
+  return out;
+}
+
+var cv = document.getElementById('screen'), cx = cv.getContext('2d'), img = cx.createImageData(W, H);
+var cmd = document.getElementById('cmd'), readout = document.getElementById('readout');
+
+function blocked(x, y) {
+  var R = ROOMS[st.room], hit = 0, e = Math.max(2, Math.round(5 * scaleAt(y)));
+  for (var dx = -e; dx <= e; dx += e) { var v = R.ctlBuf[y * W + x + dx]; if (v === 1) return 1; if (v === 2) hit = 2; }
+  return hit;
+}
+function switchRoom(n, x, y) {
+  st.room = n; st.x = x; st.y = y; st.msg = null; st.icon = null; buildRoom(n);
+  if (n === 2) { pond.wait = 36; pond.fish = null; pond.ripples = []; pond.drops = []; }
+}
+function addRipple(x, y) { pond.ripples.push({ x: x, y: y, a: 0 }); }
+function addDrops(x, y) { for (var i = 0; i < 6; i++) pond.drops.push({ x: x, y: y, vx: (i - 2.5) * 0.9, vy: -2.2 - (i % 2) * 0.8, a: 0 }); }
+var ARC = [[0, 0], [0.25, 0.75], [0.5, 1], [0.75, 0.75], [1, 0]];
+function arcH(u) { for (var i = 1; i < ARC.length; i++) if (u <= ARC[i][0]) { var a = ARC[i - 1], b = ARC[i]; return a[1] + (b[1] - a[1]) * (u - a[0]) / (b[0] - a[0]); } return 0; }
+function pondStep() {
+  pond.t++;
+  if (st.room !== 2) return;
+  if (pond.t % 30 === 0) { var rx, ry; do { rx = 124 + Math.random() * 124; ry = 124 + Math.random() * 40; } while (!inPond(rx, ry)); addRipple(Math.round(rx), Math.round(ry)); }
+  var f = pond.fish;
+  if (f) {
+    f.f++;
+    if (f.f >= f.n) { addRipple(Math.round(f.x0 + f.dx), f.y0); addDrops(Math.round(f.x0 + f.dx), f.y0); pond.fish = null; pond.wait = 60 + Math.floor(Math.random() * 76); }
+  } else if (--pond.wait <= 0) {
+    var dir = Math.random() < 0.5 ? -1 : 1, x0 = 150 + Math.round(Math.random() * 80), y0 = 142 + Math.round(Math.random() * 9);
+    pond.fish = { f: 0, n: 16, x0: x0, y0: y0, dx: dir * (22 + Math.round(Math.random() * 8)), dir: dir };
+    addRipple(x0, y0); addDrops(x0, y0); playSplash();
+  }
+  pond.ripples.forEach(function (r) { r.a++; });
+  pond.ripples = pond.ripples.filter(function (r) { return r.a <= 9; });
+  pond.drops.forEach(function (d) { d.a++; });
+  pond.drops = pond.drops.filter(function (d) { return d.a <= 6; });
+}
+/* fish cels: drawn once at 20x20 facing right, then rotated for rising / level / falling */
+function fishBase() {
+  var b = mk(T, 20, 20);
+  run(b, [['c', 14], ['p', 6, 10, 2, 7, 2, 13], ['c', 10], ['e', 11, 10, 7, 3], ['c', 12], ['e', 11, 9, 6, 1], ['c', 15], ['e', 11, 12, 5, 1], ['c', 0], ['d', 15, 9]]);
+  return b;
+}
+var FISH = (function () {
+  var base = fishBase(), out = [];
+  [-0.6, 0, 0.6].forEach(function (th) {
+    var o = mk(T, 20, 20), c = Math.cos(th), sn = Math.sin(th);
+    for (var y = 0; y < 20; y++) for (var x = 0; x < 20; x++) {
+      var dx = x - 9.5, dy = y - 9.5, sx = Math.round(c * dx + sn * dy + 9.5), sy = Math.round(-sn * dx + c * dy + 9.5);
+      if (sx >= 0 && sx < 20 && sy >= 0 && sy < 20) o[y * 20 + x] = base[sy * 20 + sx];
+    }
+    var q = mk(T, 20, 20);
+    for (var y2 = 0; y2 < 20; y2++) for (var x2 = 0; x2 < 20; x2++) {
+      var v = o[y2 * 20 + x2];
+      if (v !== T) q[y2 * 20 + x2] = v;
+      else if ((y2 > 0 && o[(y2 - 1) * 20 + x2] !== T) || (y2 < 19 && o[(y2 + 1) * 20 + x2] !== T) || (x2 > 0 && o[y2 * 20 + x2 - 1] !== T) || (x2 < 19 && o[y2 * 20 + x2 + 1] !== T)) q[y2 * 20 + x2] = 0;
+    }
+    out.push(q);
+  });
+  return out;
+})();
+function drawPond(R) {
+  var i, x, y;
+  var water = function (px, py) { var v = R.bgBuf[py * W + px]; return inPond(px, py) && (v === 3 || v === 1); };
+  GLINTS.forEach(function (g, gi) {
+    var cel = (Math.floor(pond.t / 4) + gi * 3) % 4, len = cel === 1 ? 2 : cel === 2 ? 5 : cel === 3 ? 2 : 0, col = cel === 3 ? 1 : 15;
+    for (i = 0; i < len; i++) if (water(g[0] + i, g[1])) fbuf[g[1] * W + g[0] + i] = col;
+  });
+  pond.ripples.forEach(function (r) {
+    var rx = 2 + r.a, ry = Math.max(1, Math.round(rx / 3)), col = r.a < 5 ? 15 : 1, steps = rx * 6;
+    for (i = 0; i < steps; i++) {
+      var th = i / steps * Math.PI * 2, px = Math.round(r.x + Math.cos(th) * rx), py = Math.round(r.y + Math.sin(th) * ry);
+      if (px >= 0 && px < W && py >= 0 && py < H && water(px, py) && (r.a < 5 || R.bgBuf[py * W + px] === 3)) fbuf[py * W + px] = col;
+    }
+  });
+  var f = pond.fish;
+  if (f) {
+    var u = f.f / f.n, yy = Math.round(f.y0 - 24 * arcH(u)), xx = Math.round(f.x0 + f.dx * u);
+    if (yy < f.y0 - 2) {
+      var pose = u < 0.38 ? 0 : u > 0.62 ? 2 : 1, cel = FISH[pose];
+      for (y = 0; y < 20; y++) for (x = 0; x < 20; x++) {
+        var v = cel[y * 20 + (f.dir < 0 ? 19 - x : x)];
+        if (v === T) continue;
+        var px2 = xx - 10 + x, py2 = yy - 10 + y;
+        if (px2 >= 0 && px2 < W && py2 >= 8 && py2 < 184) fbuf[py2 * W + px2] = v;
+      }
+    }
+  }
+  pond.drops.forEach(function (d) {
+    var px = Math.round(d.x + d.vx * d.a), py = Math.round(d.y + d.vy * d.a + 0.5 * d.a * d.a * 0.5);
+    if (px >= 0 && px < W && py >= 8 && py < 184 && d.a < 6) fbuf[py * W + px] = 15;
+  });
+}
+function move() {
+  if (st.slide > 0) {
+    st.slide--; st.rockX += (ROCK_MOVED - ROCK_HOME) / 14;
+    if (st.slide === 0) st.rockX = ROCK_MOVED;
+    buildRoom(1);
+  }
+  pondStep();
+  if (!keys.length) { st.cel = 0; st.step = 0; return; }
+  var d = keys[keys.length - 1], dx = 0, dy = 0, sp = 3 * scaleAt(st.y);
+  st.dir = d;
+  st.acc += sp;
+  var n = Math.floor(st.acc); if (n < 1) { return; } st.acc -= n;
+  if (d === 'N') dy = -n; else if (d === 'S') dy = n; else if (d === 'W') dx = -n; else dx = n;
+  var nx = Math.max(6, Math.min(313, st.x + dx)), ny = st.y + dy;
+  if (ny < HORIZON || ny > GROUND_BOTTOM - 1) return;
+  var b = blocked(nx, ny);
+  if (b === 1) return;
+  st.x = nx; st.y = ny;
+  if (b === 2) { if (st.room === 1) switchRoom(2, 20, 168); else switchRoom(1, 296, 128); return; }
+  st.step++; st.cel = [1, 0, 2, 0][Math.floor(st.step / 3) % 4];
+}
+
+/* ---------- render ---------- */
+function score() { return (st.hasStone ? 1 : 0) + (st.coins ? 5 : 0); }
+function drawCoins(cx0, cy0) {
+  for (var k = 0; k < 3; k++) {
+    var ox = cx0 + (k === 1 ? 5 : k === 2 ? -4 : 0), oy = cy0 - k * 5 + (k === 0 ? 4 : 0);
+    var b = mk(T); void b;
+    fillEllipseFB(ox, oy + 2, 11, 4, 8); fillEllipseFB(ox, oy, 11, 4, 8); fillEllipseFB(ox, oy, 9, 3, 7); fillEllipseFB(ox - 2, oy - 1, 3, 1, 15);
+  }
+}
+function fillEllipseFB(cx, cy, rx, ry, c) {
+  for (var y = cy - ry; y <= cy + ry; y++) { var t = (y - cy) / ry, dx = rx * Math.sqrt(Math.max(0, 1 - t * t)); for (var x = Math.round(cx - dx); x <= Math.round(cx + dx); x++) if (x >= 0 && x < W && y >= 0 && y < H) fbuf[y * W + x] = c; }
+}
+function render() {
+  var R = ROOMS[st.room], i;
+  fbuf.set(R.bgBuf);
+  if (st.room === 2) drawPond(R);
+  var sc = scaleAt(st.y), hero = scaled(st.dir, st.cel, sc), hw = Math.max(1, Math.round(SW * sc)), hh = Math.max(1, Math.round(SH * sc));
+  var list = R.objs.map(function (o) { return { y: o.baseY, o: o }; });
+  list.push({ y: st.y, p: true });
+  list.sort(function (a, b) { return a.y - b.y; });
+  list.forEach(function (e) {
+    if (e.p) {
+      var ox = st.x - (hw >> 1), oy = st.y - hh + 1;
+      for (var y = 0; y < hh; y++) for (var x = 0; x < hw; x++) { var c = hero[y * hw + x]; if (c !== T) { var px = ox + x, py = oy + y; if (px >= 0 && px < W && py >= 0 && py < H) fbuf[py * W + px] = c; } }
+      return;
+    }
+    var bb = e.o.box, b = e.o.buf;
+    for (var y2 = bb[1]; y2 <= bb[3]; y2++) for (var x2 = bb[0]; x2 <= bb[2]; x2++) { var c2 = b[y2 * W + x2]; if (c2 !== T) fbuf[y2 * W + x2] = c2; }
+  });
+  rectFB(0, 0, W, 8, 15);
+  textFB('Score:' + score() + ' of 6  Sound:' + (soundOn ? 'on' : 'off'), 8, 0, 0, 15);
+  rectFB(0, 184, W, H, 15); rectFB(0, 184, W, 185, 0);
+  var blink = (Math.floor(st.tick / 6) % 2) ? '_' : ' ';
+  textFB('> ' + cmd.value + blink, 4, 188, 0, 15);
+  if (st.msg) {
+    var wide = st.icon ? 22 : 29, lines = wrap(st.msg, wide), h = Math.max(st.icon ? 48 : 0, 14 + lines.length * 10 + 16), top = Math.round(8 + (176 - h) / 2);
+    rectFB(36, top, 284, top + h, 15); frameFB(36, top, 284, top + h, 0);
+    lines.forEach(function (ln, k) { textFB(ln, 44, top + 8 + k * 10, 0, 15); });
+    if (st.icon === 'coins') drawCoins(256, top + 26);
+    textFB('[any key]', 44, top + h - 12, 0, 15);
+  }
+  var d = img.data;
+  for (i = 0; i < W * H; i++) { var q = PALRGB[fbuf[i]]; d[4 * i] = q[0]; d[4 * i + 1] = q[1]; d[4 * i + 2] = q[2]; d[4 * i + 3] = 255; }
+  if (overlay === 1) {
+    for (i = 8 * W; i < 184 * W; i++) {
+      var y3 = (i / W) | 0, v = R.ctlBuf[i];
+      if (y3 < HORIZON) { d[4 * i] *= 0.45; d[4 * i + 1] *= 0.45; d[4 * i + 2] *= 0.45; }
+      if (v === 1) { d[4 * i] = d[4 * i] * 0.35 + 255 * 0.65; d[4 * i + 1] *= 0.35; d[4 * i + 2] *= 0.35; }
+      else if (v === 2) { d[4 * i] *= 0.4; d[4 * i + 1] = d[4 * i + 1] * 0.4 + 255 * 0.6; d[4 * i + 2] *= 0.4; }
+    }
+  }
+  if (overlay === 2) {
+    var mark = function (x, y, rgb) { if (x < 0 || x >= W || y < 0 || y >= H) return; var kk = 4 * (y * W + x); d[kk] = rgb[0]; d[kk + 1] = rgb[1]; d[kk + 2] = rgb[2]; };
+    R.objs.forEach(function (o, n) {
+      for (var x = o.box[0] - 4; x <= o.box[2] + 4; x++) if ((x >> 1) % 2 === 0) mark(x, o.baseY, [255, 0, 220]);
+      glyphs(R.names[n], o.box[0], o.baseY + 2, function (px, py, on) { if (on) mark(px, py, [255, 0, 220]); });
+    });
+    for (var x3 = st.x - hw; x3 <= st.x + hw; x3++) if ((x3 >> 1) % 2 === 0) mark(x3, st.y, [255, 230, 0]);
+    [[HORIZON, '50%'], [138, '75%'], [183, '100%']].forEach(function (r) {
+      for (var xx = 0; xx < 40; xx++) mark(xx, r[0], [0, 255, 255]);
+      glyphs(r[1], 2, r[0] - 9, function (px, py, on) { if (on) mark(px, py, [0, 255, 255]); });
+    });
+  }
+  cx.putImageData(img, 0, 0);
+  readout.textContent = 'walker scale ' + Math.round(sc * 100) + '%   size ' + hw + 'x' + hh + ' px   foot line y=' + st.y + '   step ' + (3 * sc).toFixed(1) + ' px';
+}
+
+/* ---------- parser ---------- */
+var FILL = ['at', 'the', 'a', 'an', 'to', 'up', 'on', 'in', 'into', 'inside', 'some', 'it'];
+var VERBS = { look: 'look', examine: 'look', l: 'look', x: 'look', search: 'look', get: 'get', take: 'get', grab: 'get', pick: 'get', inventory: 'inv', inv: 'inv', i: 'inv', move: 'move', push: 'move', shove: 'move', slide: 'move', roll: 'move' };
+var NOUNS = {
+  tree: 'tree', trees: 'tree', oak: 'tree', rock: 'rock', rocks: 'rock', boulder: 'boulder', stone: 'stone', pebble: 'stone', small: 'stone',
+  around: 'room', room: 'room', here: 'room', me: 'self', self: 'self', myself: 'self', woman: 'self', lady: 'self', girl: 'self',
+  path: 'path', trail: 'path', sand: 'path', pond: 'pond', water: 'pond', lake: 'pond', lily: 'lily', lilies: 'lily', pads: 'lily',
+  fish: 'fish', trout: 'fish', flower: 'flower', flowers: 'flower', sky: 'sky', clouds: 'sky', cloud: 'sky', hills: 'hills',
+  hole: 'hole', ground: 'hole', coins: 'coins', coin: 'coins', gold: 'coins', money: 'coins'
+};
+function pondFishText() { return pond.fish ? 'A silver fish leaps clear of the water.' : 'You can\'t see a fish right now. Ripples spread where one was a moment ago.'; }
+var REPLY = {
+  1: {
+    room: 'You are in a sunny meadow. A worn sandy path winds east between old trees and grey rocks.',
+    tree: 'A tall oak, older than the path. Its trunk is thick and rough with moss.',
+    boulder: 'A big grey boulder. It would take a giant to move it.',
+    stone: 'A smooth stone, just the right size to pocket.',
+    path: 'Packed sand, worn smooth by travellers.',
+    flower: 'Little red and white wildflowers dot the grass.'
+  },
+  2: {
+    room: 'A quiet clearing with a still pond. A sandy trail leads back west.',
+    tree: 'A leafy tree leaning over the water.',
+    rock: 'Flat grey rocks, warm from the sun.',
+    path: 'The sandy trail runs west, back to the meadow.',
+    pond: 'Clear, cool water. A few lily pads drift near the middle, and now and then a fish leaps.',
+    fish: pondFishText,
+    lily: 'Round green pads. One has a tiny white flower.',
+    flower: 'Small wildflowers grow in the long grass.'
+  },
+  both: { self: 'A woman in a red dress, with plenty of road still ahead.', sky: 'Puffy white clouds drift by.', hills: 'Soft green hills roll away in the distance.' }
+};
+function nearRock() { return Math.abs(st.x - Math.round(st.rockX)) <= NEAR && Math.abs(st.y - ROCK_Y) <= 22; }
+function nearHole() { return Math.abs(st.x - ROCK_HOME) <= NEAR && Math.abs(st.y - ROCK_Y) <= 22; }
+function say(text, icon) { return { t: text, icon: icon || null }; }
+function answer(raw) {
+  var words = raw.toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean).filter(function (w) { return FILL.indexOf(w) < 0; });
+  if (!words.length) return say('Huh?');
+  for (var i = 0; i < words.length; i++) if (!VERBS[words[i]] && !NOUNS[words[i]]) return say('I don\'t know the word "' + words[i] + '".');
+  var verb = VERBS[words[0]];
+  if (!verb) return say('You need to say what to do.');
+  var noun = null;
+  for (var k = 1; k < words.length; k++) if (NOUNS[words[k]]) { noun = NOUNS[words[k]]; if (words[k] === 'rock' || words[k] === 'rocks') break; }
+  var room = st.room, here = REPLY[room], both = REPLY.both;
+  if (verb === 'inv') {
+    var inv = [];
+    if (st.hasStone) inv.push('a small stone');
+    if (st.coins) inv.push('five gold coins');
+    return say(inv.length ? 'You are carrying:\n' + inv.join('\n') : 'You are carrying nothing.');
+  }
+  if (verb === 'look') {
+    if (!noun) return say(here.room);
+    if (noun === 'rock' && room === 1) return say(st.moved ? 'The rock sits to one side of a shallow hole.' : 'A grey rock, half sunk in the grass. It looks loose enough to move.');
+    if (noun === 'hole') {
+      if (room !== 1 || !st.moved) return say('You don\'t see that here.');
+      if (!nearHole()) return say('You are too far away to see into it.');
+      if (st.coins) return say('The hole is empty now.');
+      st.coinsSeen = true; buildRoom(1);
+      return say('You look into the hole. Five gold coins glint in the dirt.', 'coins');
+    }
+    if (noun === 'coins') {
+      if (st.coins) return say('Five gold coins stamped with a tiny sun.');
+      return say(st.coinsSeen && room === 1 ? 'Five gold coins stamped with a tiny sun, lying in the hole.' : 'You don\'t see that here.');
+    }
+    if (noun === 'stone' && room === 1) return say(st.hasStone ? 'You already have it.' : here.stone);
+    var rp = here[noun] || both[noun];
+    return say(typeof rp === 'function' ? rp() : (rp || 'You don\'t see that here.'));
+  }
+  if (verb === 'move') {
+    if (!noun) return say('Move what?');
+    if (noun === 'rock' && room === 1) {
+      if (st.moved) return say('You already moved it.');
+      if (!nearRock()) return say('You are too far away.');
+      st.moved = true; st.slide = 14; st.rockX = ROCK_HOME; playSfx();
+      return say('You heave the rock aside. It leaves a shallow hole in the ground.');
+    }
+    if (noun === 'boulder') return say('It is far too heavy to move.');
+    if (noun === 'tree') return say('Trees stay where they are.');
+    if (noun === 'rock') return say('You push the rock, but it will not budge.');
+    return here[noun] || both[noun] ? say('You can\'t move that.') : say('You don\'t see that here.');
+  }
+  if (!noun) return say('Get what?');
+  if (noun === 'coins') {
+    if (st.coins) return say('You already have them.');
+    if (!st.coinsSeen || room !== 1) return say('You don\'t see that here.');
+    if (!nearHole()) return say('You are too far away.');
+    st.coins = true; buildRoom(1);
+    return say('You take the five gold coins.', 'coins');
+  }
+  if (noun === 'stone' && room === 1) {
+    if (st.hasStone) return say('You already have it.');
+    st.hasStone = true; return say('You take the small stone.');
+  }
+  if (noun === 'rock' && room === 1) return say('It is too heavy to carry. You might be able to move it.');
+  if (noun === 'boulder' || noun === 'rock') return say('You can\'t take that.');
+  if (noun === 'hole') return say('You can\'t take that.');
+  if (noun === 'fish' && room === 2) return say('It is far too quick for you.');
+  return here[noun] || both[noun] ? say('You can\'t take that.') : say('You don\'t see that here.');
+}
+
+/* ---------- sound: note lists + the sequencing rule from sound.c ---------- */
+var B = 48; /* one beat = 48 ticks of 1/60 s */
+function mel(list) { return list.map(function (n) { return [n[0], n[0] ? 52 : 0, n[1] * B]; }); }
+var SND = {
+  music: { name: 'Ambient music (SOUND.1)', kind: 'music', loop: true, tracks: [
+    { wave: 4, notes: [[45, 70, 4 * B], [41, 70, 4 * B], [48, 70, 4 * B], [43, 70, 4 * B]] },
+    { wave: 1, notes: [[60, 36, 4 * B], [57, 36, 4 * B], [64, 36, 4 * B], [59, 36, 4 * B]] },
+    { wave: 1, notes: [[64, 36, 4 * B], [60, 36, 4 * B], [67, 36, 4 * B], [62, 36, 4 * B]] },
+    { wave: 4, notes: mel([[0, 2], [76, 2], [74, 1], [72, 1], [69, 2], [0, 2], [72, 1], [74, 1], [76, 2], [72, 2]]) }
+  ] },
+  splash: { name: 'Fish splash (SOUND.3)', kind: 'effect', loop: false, tracks: [
+    { wave: 3, notes: [[56, 80, 5], [0, 0, 57], [54, 90, 6], [50, 60, 7]] },
+    { wave: 4, notes: [[0, 0, 62], [84, 70, 4], [91, 60, 6]] }
+  ] },
+  drag: { name: 'Rock drag (SOUND.2)', kind: 'effect', loop: false, tracks: [
+    { wave: 3, notes: [[52, 90, 8], [50, 100, 10], [53, 95, 8], [48, 100, 10], [51, 80, 10], [47, 60, 8]] },
+    { wave: 2, notes: [[33, 70, 12], [31, 80, 14], [34, 70, 12], [30, 60, 16]] }
+  ] }
+};
+function sndBytes(d) { var n = 3; d.tracks.forEach(function (t) { n += 3 + t.notes.length * 4; }); return n; }
+function sndTicks(d) { var m = 0; d.tracks.forEach(function (t) { var s = 0; t.notes.forEach(function (n) { s += n[2]; }); if (s > m) m = s; }); return m; }
+var soundOn = true, actx = null, master = null, voices = [], slots = [null, null], lastMs = 0, remMs = 0;
+var WAVES = { 0: 'square', 1: 'triangle', 2: 'sawtooth', 4: 'sine' }, WSCALE = { 0: 0.10, 1: 0.30, 2: 0.14, 4: 0.40 };
+function initAudio() {
+  if (actx || !(window.AudioContext || window.webkitAudioContext)) return;
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    master = actx.createGain(); master.gain.value = 0.32; master.connect(actx.destination);
+    var nb = actx.createBuffer(1, actx.sampleRate, actx.sampleRate), nd = nb.getChannelData(0);
+    for (var i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    for (var v = 0; v < 8; v++) {
+      var o = actx.createOscillator(), og = actx.createGain(), ns = actx.createBufferSource(), bp = actx.createBiquadFilter(), ng = actx.createGain();
+      og.gain.value = 0; ng.gain.value = 0; bp.type = 'bandpass'; bp.Q.value = 1.1;
+      o.connect(og); og.connect(master); o.start();
+      ns.buffer = nb; ns.loop = true; ns.connect(bp); bp.connect(ng); ng.connect(master); ns.start();
+      voices.push({ o: o, og: og, bp: bp, ng: ng });
+    }
+    lastMs = performance.now();
+    if (soundOn) startSound('music', 0);
+    updateAudioLabel();
+  } catch (err) { actx = null; }
+}
+function noteOn(v, wave, pitch, vol) {
+  if (!actx || !voices[v]) return;
+  var vo = voices[v], t = actx.currentTime, f = 440 * Math.pow(2, (pitch - 69) / 12);
+  if (!pitch || !vol) { vo.og.gain.setTargetAtTime(0, t, 0.12); vo.ng.gain.setTargetAtTime(0, t, 0.04); return; }
+  if (wave === 3) {
+    vo.bp.frequency.setTargetAtTime(f * 3, t, 0.01);
+    vo.ng.gain.setTargetAtTime(vol / 255 * 1.6, t, 0.015);
+    vo.og.gain.setTargetAtTime(0, t, 0.05);
+  } else {
+    vo.o.type = WAVES[wave] || 'sine';
+    vo.o.frequency.setTargetAtTime(f, t, 0.006);
+    vo.og.gain.setTargetAtTime(vol / 255 * (WSCALE[wave] || 0.3) * 2.2, t, wave === 4 || wave === 1 ? 0.18 : 0.02);
+    vo.ng.gain.setTargetAtTime(0, t, 0.04);
+  }
+}
+function startSound(key, slot) {
+  var d = SND[key];
+  stopSlot(slot);
+  slots[slot] = { key: key, d: d, base: slot * 4, tr: d.tracks.map(function (t) { return { pos: 0, left: 0, wave: t.wave, notes: t.notes }; }) };
+}
+function stopSlot(slot) {
+  var s = slots[slot];
+  if (s) s.tr.forEach(function (t, g) { noteOn(s.base + g, t.wave, 0, 0); });
+  slots[slot] = null;
+}
+function stepSlot(slot) {
+  var s = slots[slot]; if (!s) return;
+  var done = true;
+  s.tr.forEach(function (t, g) {
+    if (t.pos >= t.notes.length) return;
+    if (t.left === 0) { var n = t.notes[t.pos]; noteOn(s.base + g, t.wave, n[0], n[1]); t.left = n[2]; t.pos++; }
+    else t.left--;
+    if (t.pos < t.notes.length || t.left > 0) done = false;
+  });
+  if (done) { var key = s.key, loop = s.d.loop; stopSlot(slot); if (loop && soundOn) startSound(key, slot); }
+}
+setInterval(function () {
+  if (!actx) return;
+  var now = performance.now(), el = now - lastMs + remMs, ticks = Math.floor(el * 60 / 1000);
+  lastMs = now; remMs = el - ticks * 1000 / 60;
+  if (ticks > 30) ticks = 30;
+  for (; ticks > 0; ticks--) { stepSlot(0); stepSlot(1); }
+}, 8);
+function playSfx() { if (soundOn && actx) startSound('drag', 1); }
+function playSplash() { if (soundOn && actx) startSound('splash', 1); }
+function updateAudioLabel() {
+  var b = document.getElementById('snd'); b.textContent = 'Sound: ' + (soundOn ? 'on' : 'off'); b.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+  var l = document.getElementById('audiostate'); if (l) l.textContent = actx ? (soundOn ? 'audio running' : 'sound off') : 'click or press a key to start audio';
+}
+['pointerdown', 'keydown'].forEach(function (ev) { window.addEventListener(ev, function () { initAudio(); if (actx && actx.state === 'suspended') actx.resume(); }, true); });
+document.getElementById('snd').onclick = function () {
+  soundOn = !soundOn;
+  if (!soundOn) { stopSlot(0); stopSlot(1); } else if (actx) startSound('music', 0);
+  updateAudioLabel();
+};
+document.getElementById('playdrag').onclick = function () { initAudio(); if (soundOn) startSound('drag', 1); };
+document.getElementById('playmusic').onclick = function () { initAudio(); if (soundOn) startSound('music', 0); };
+
+/* ---------- wiring ---------- */
+function setPressed(ids, on) { ids.forEach(function (id) { document.getElementById(id).setAttribute('aria-pressed', id === on ? 'true' : 'false'); }); }
+function pickRoom(n) { var R = ROOMS[n]; switchRoom(n, R.start[0], R.start[1]); setPressed(['tab1', 'tab2'], 'tab' + n); fillSource(); }
+document.getElementById('tab1').onclick = function () { pickRoom(1); };
+document.getElementById('tab2').onclick = function () { pickRoom(2); };
+document.getElementById('reset').onclick = function () {
+  st.hasStone = false; st.moved = false; st.rockX = ROCK_HOME; st.slide = 0; st.coins = false; st.coinsSeen = false; st.msg = null; st.icon = null;
+  stopSlot(1);
+  pickRoom(1);
+};
+var LEG = [
+  null,
+  '<span><i style="background:rgb(255,70,70)"></i>blocks walking</span><span><i style="background:rgb(60,255,100)"></i>exit to the next screen</span><span><i style="background:#222"></i>darkened: above the horizon line, not walkable</span>',
+  '<span><i style="background:rgb(255,0,220)"></i>baseline of each tree and rock</span><span><i style="background:rgb(255,230,0)"></i>her feet. Above an object’s line she is behind it.</span><span><i style="background:rgb(0,255,255)"></i>her scale: 50% at the horizon, 100% at the bottom</span>'
+];
+[0, 1, 2].forEach(function (n) {
+  document.getElementById('ov' + n).onclick = function () {
+    overlay = n; setPressed(['ov0', 'ov1', 'ov2'], 'ov' + n);
+    var lg = document.getElementById('legend'); lg.hidden = !LEG[n]; lg.innerHTML = LEG[n] || '';
+  };
+});
+function dirOf(e) { return { ArrowUp: 'N', ArrowDown: 'S', ArrowLeft: 'W', ArrowRight: 'E' }[e.key]; }
+window.addEventListener('keydown', function (e) {
+  if (st.msg && !e.metaKey && !e.ctrlKey && !e.altKey && e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt' && e.key !== 'Meta') {
+    st.msg = null; st.icon = null; e.preventDefault(); return;
+  }
+  if (document.activeElement === cmd) { if (e.key === 'Escape') cmd.blur(); return; }
+  var d = dirOf(e);
+  if (d) { e.preventDefault(); if (keys.indexOf(d) < 0) keys.push(d); }
+});
+window.addEventListener('keyup', function (e) { var d = dirOf(e); if (d) keys = keys.filter(function (k) { return k !== d; }); });
+window.addEventListener('blur', function () { keys = []; });
+cv.addEventListener('pointerdown', function () { cv.focus(); st.msg = null; st.icon = null; });
+Array.prototype.forEach.call(document.querySelectorAll('.dpad button'), function (b) {
+  var d = b.getAttribute('data-d');
+  b.addEventListener('pointerdown', function (e) { e.preventDefault(); if (keys.indexOf(d) < 0) keys.push(d); st.msg = null; st.icon = null; });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, function () { keys = keys.filter(function (k) { return k !== d; }); }); });
+});
+document.getElementById('cmdform').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var t = cmd.value.trim(); if (!t) { st.msg = null; st.icon = null; return; }
+  var r = answer(t); st.msg = r.t; st.icon = r.icon; cmd.value = ''; keys = [];
+  if (st.slide > 0) buildRoom(1);
+  updateAudioLabel();
+});
+
+/* ---------- static sections ---------- */
+function paintCanvas(c, buf, w, h) {
+  c.width = w; c.height = h;
+  var ctx = c.getContext('2d'), im = ctx.createImageData(w, h);
+  for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) { var v = buf[y * w + x], k = 4 * (y * w + x); if (v !== T) { var q = PALRGB[v]; im.data[k] = q[0]; im.data[k + 1] = q[1]; im.data[k + 2] = q[2]; im.data[k + 3] = 255; } }
+  ctx.putImageData(im, 0, 0);
+}
+(function () {
+  var pal = document.getElementById('pal');
+  PAL.forEach(function (p, i) {
+    var c = PALRGB[i];
+    pal.insertAdjacentHTML('beforeend', '<div class="sw"><i style="background:rgb(' + c.join(',') + ')"></i><span><strong>' + i.toString(16).toUpperCase() + ' ' + p[1] + '</strong><br><span class="mono">' + hex3(p[0]) + ' &middot; ' + p[2] + '</span></span></div>');
+  });
+  var sh = document.getElementById('sheet');
+  sh.insertAdjacentHTML('beforeend', '<span></span><span class="h">Front</span><span class="h">Back</span><span class="h">Right</span><span class="h">Left</span>');
+  ['Stand', 'Left foot', 'Right foot'].forEach(function (lab, cel) {
+    sh.insertAdjacentHTML('beforeend', '<span class="r">' + lab + '</span>');
+    ['S', 'N', 'E', 'W'].forEach(function (d) { var c = document.createElement('canvas'); paintCanvas(c, CELLS[d][cel], SW, SH); sh.appendChild(c); });
+  });
+  var fs = document.getElementById('fishsheet');
+  fs.insertAdjacentHTML('beforeend', '<span></span><span class="h">Rising</span><span class="h">Level</span><span class="h">Falling</span><span class="r">Fish, 20&times;20</span>');
+  FISH.forEach(function (cel) { var c = document.createElement('canvas'); paintCanvas(c, cel, 20, 20); c.style.height = '96px'; c.style.background = '#38b'; fs.appendChild(c); });
+  var sc = document.getElementById('scales');
+  [[184, 1], [160, 0], [138, 0], [116, 0], [92, 0]].forEach(function (r) {
+    var s = scaleAt(r[0]), dw = Math.max(1, Math.round(SW * s)), dh = Math.max(1, Math.round(SH * s));
+    var fig = document.createElement('figure'), c = document.createElement('canvas');
+    paintCanvas(c, scaled('S', 0, s), dw, dh);
+    c.style.width = dw * 3 + 'px'; c.style.height = dh * 3 + 'px';
+    var cap = document.createElement('figcaption'); cap.innerHTML = Math.round(s * 100) + '%<br>' + dw + '&times;' + dh;
+    fig.appendChild(c); fig.appendChild(cap); sc.appendChild(fig);
+  });
+  var sideFig = document.createElement('figure'), sc2 = document.createElement('canvas');
+  paintCanvas(sc2, scaled('E', 1, scaleAt(150)), Math.round(SW * scaleAt(150)), Math.round(SH * scaleAt(150)));
+  sc2.style.width = Math.round(SW * scaleAt(150)) * 3 + 'px'; sc2.style.height = Math.round(SH * scaleAt(150)) * 3 + 'px';
+  var cp = document.createElement('figcaption'); cp.innerHTML = 'walking<br>profile'; sideFig.appendChild(sc2); sideFig.appendChild(cp); sc.appendChild(sideFig);
+
+  var rows = [
+    ['look', 'both', 'Room description (differs per room).'],
+    ['look tree', 'both', REPLY[1].tree + ' / ' + REPLY[2].tree],
+    ['look rock', 'meadow', 'A grey rock, half sunk in the grass. It looks loose enough to move. (After moving: The rock sits to one side of a shallow hole.)'],
+    ['look rock', 'clearing', REPLY[2].rock],
+    ['move rock', 'meadow', 'You heave the rock aside. It leaves a shallow hole in the ground.'],
+    ['move rock (too far)', 'meadow', 'You are too far away.'],
+    ['move rock (again)', 'meadow', 'You already moved it.'],
+    ['look hole', 'meadow', 'You look into the hole. Five gold coins glint in the dirt. (After taking them: The hole is empty now.)'],
+    ['get coins', 'meadow', 'You take the five gold coins. (+5 score. Before looking in the hole: You don\'t see that here.)'],
+    ['get coins (too far)', 'meadow', 'You are too far away.'],
+    ['look hole (too far)', 'meadow', 'You are too far away to see into it.'],
+    ['move boulder', 'meadow', 'It is far too heavy to move.'],
+    ['get rock', 'meadow', 'It is too heavy to carry. You might be able to move it.'],
+    ['get stone', 'meadow', 'You take the small stone. (+1 score; again: You already have it.)'],
+    ['look boulder / stone', 'meadow', REPLY[1].boulder + ' / ' + REPLY[1].stone],
+    ['look path', 'both', REPLY[1].path + ' / ' + REPLY[2].path],
+    ['look flowers', 'both', REPLY[1].flower + ' / ' + REPLY[2].flower],
+    ['look pond / lilies', 'clearing', 'Clear, cool water. A few lily pads drift near the middle, and now and then a fish leaps. / ' + REPLY[2].lily],
+    ['look fish', 'clearing', 'A silver fish leaps clear of the water. (Between jumps: You can\'t see a fish right now. Ripples spread where one was a moment ago.)'],
+    ['get fish', 'clearing', 'It is far too quick for you.'],
+    ['look me', 'both', REPLY.both.self],
+    ['inventory', 'both', 'You are carrying: a small stone, five gold coins. (Or: You are carrying nothing.)'],
+    ['look coins', 'meadow', 'Five gold coins stamped with a tiny sun, lying in the hole. (Once taken: without the lying in the hole.)'],
+    ['anything unknown', 'both', 'I don\'t know the word "zork".'],
+    ['a thing not here', 'both', 'You don\'t see that here.']
+  ];
+  document.getElementById('sndrows').innerHTML = Object.keys(SND).map(function (k) {
+    var d = SND[k], notes = 0; d.tracks.forEach(function (t) { notes += t.notes.length; });
+    var waves = d.tracks.map(function (t) { return ['square', 'triangle', 'saw', 'noise', 'sine'][t.wave]; }).join(', ');
+    return '<tr><td>' + d.name + '</td><td>' + d.kind + (d.loop ? ', loops' : '') + '</td><td>' + d.tracks.length + ' (' + waves + ')</td><td>' + notes + '</td><td>' + (sndTicks(d) / 60).toFixed(1) + ' s</td><td>' + sndBytes(d) + ' bytes</td></tr>';
+  }).join('');
+  document.getElementById('wordrows').innerHTML = rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join('');
+})();
+function fillSource() {
+  var R = ROOMS[st.room], out = [];
+  var add = function (head, ops) { out.push('; ' + head); ops.forEach(function (o) { out.push(opText(o)); }); out.push(''); };
+  add('backdrop', R.bg);
+  R.objs.forEach(function (o, i) { add(R.names[i] + ' at ' + o.x + ',' + o.baseY + ' (picture)', o.shadow.concat(o.vis)); });
+  add('control: exits and the pond', R.ctl);
+  R.objs.forEach(function (o, i) { add(R.names[i] + ' footprint (blocks walking)', o.ctl); });
+  if (st.room === 1) add('hole overlay (separate picture, drawn when the rock is moved)', holeOps(ROCK_HOME, ROCK_Y));
+  document.getElementById('srcpre').textContent = out.join('\n');
+  document.getElementById('srcsum').textContent = R.name + ': about ' + R.bytes + ' bytes as a picture resource (the screen as pixels would be 64,000)';
+}
+
+buildRoom(2); buildRoom(1);
+pickRoom(1);
+updateAudioLabel();
+setInterval(function () { st.tick++; move(); render(); }, 66);
+render();
+})();
+</script>

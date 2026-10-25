@@ -11,3 +11,5 @@ obj/
 AGENTS.md
 CLAUDE.md
 copilot-instructions.md
+build*
+remove_claude.sh

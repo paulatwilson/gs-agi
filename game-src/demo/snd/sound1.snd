@@ -1,0 +1,28 @@
+; Ambient music (SOUND.1) (generated from the approved mockup)
+kind music
+gen sine
+note 45 70 192
+note 41 70 192
+note 48 70 192
+note 43 70 192
+gen triangle
+note 60 36 192
+note 57 36 192
+note 64 36 192
+note 59 36 192
+gen triangle
+note 64 36 192
+note 60 36 192
+note 67 36 192
+note 62 36 192
+gen sine
+note 0 0 96
+note 76 52 96
+note 74 52 48
+note 72 52 48
+note 69 52 96
+note 0 0 96
+note 72 52 48
+note 74 52 48
+note 76 52 96
+note 72 52 96

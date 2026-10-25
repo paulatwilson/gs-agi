@@ -1,0 +1,10 @@
+; water glint (generated from the approved mockup)
+loop ; 0
+cel 1 1 0 0
+.
+cel 2 1 0 0
+FF
+cel 5 1 0 0
+FFFFF
+cel 2 1 0 0
+11

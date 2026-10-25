@@ -1,0 +1,11 @@
+; Fish splash (SOUND.3) (generated from the approved mockup)
+kind effect
+gen noise
+note 56 80 5
+note 0 0 57
+note 54 90 6
+note 50 60 7
+gen sine
+note 0 0 62
+note 84 70 4
+note 91 60 6

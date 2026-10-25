@@ -1,0 +1,166 @@
+// LOGIC.1: the meadow, with the loose rock, the hole and the coins.
+#include "defs.agi"
+
+if (isset(f_new_room)) {
+  pic = 1;
+  load.pic(pic);
+  draw.pic(pic);
+  if (isset(f_rock_moved)) {
+    pic = 3;
+    overlay.pic(pic);
+  }
+  show.pic();
+
+  animate.obj(o_rock);
+  set.view(o_rock, view_rock);
+  if (isset(f_rock_moved)) {
+    position(o_rock, 80, 168);
+  } else {
+    position(o_rock, 112, 168);
+  }
+  draw(o_rock);
+
+  if (isset(f_coins_seen) && !isset(f_coins_taken)) {
+    animate.obj(o_coins);
+    set.view(o_coins, view_coins);
+    position(o_coins, 112, 168);
+    ignore.objs(o_coins);
+    ignore.blocks(o_coins);
+    draw(o_coins);
+  }
+
+  if (prev_room == 2) {
+    position(ego, 296, 128);
+  } else {
+    position(ego, 150, 172);
+  }
+  draw(ego);
+}
+
+// the east edge leads to the clearing
+if (isset(f_ego_touched_p2)) {
+  new.room(2);
+}
+
+// the message waits until the rock has finished sliding
+if (isset(f_rock_done) && !isset(f_rock_msg)) {
+  set(f_rock_msg);
+  print("You heave the rock aside. It leaves a shallow hole in the ground.");
+}
+
+if (said(look)) {
+  print("You are in a sunny meadow. A worn sandy path winds east between old trees and grey rocks.");
+}
+if (said(look, tree)) {
+  print("A tall oak, older than the path. Its trunk is thick and rough with moss.");
+}
+if (said(look, rock)) {
+  if (isset(f_rock_moved)) {
+    print("The rock sits to one side of a shallow hole.");
+  } else {
+    print("A grey rock, half sunk in the grass. It looks loose enough to move.");
+  }
+}
+if (said(look, boulder)) {
+  print("A big grey boulder. It would take a giant to move it.");
+}
+if (said(look, stone)) {
+  if (has(i_stone)) {
+    print("You already have it.");
+  } else {
+    print("A smooth stone, just the right size to pocket.");
+  }
+}
+if (said(look, path)) {
+  print("Packed sand, worn smooth by travellers.");
+}
+if (said(look, flower)) {
+  print("Little red and white wildflowers dot the grass.");
+}
+
+// ---- the loose rock, the hole and the coins ----
+if (said(move, rock)) {
+  if (isset(f_rock_moved)) {
+    print("You already moved it.");
+  } else {
+    if (!posn(ego, 66, 146, 158, 190)) {
+      print("You are too far away.");
+    } else {
+      set(f_rock_moved);
+      pic = 3;
+      overlay.pic(pic);
+      sound(snd_drag, f_drag_done);
+      move.obj(o_rock, 80, 168, 2, f_rock_done);
+    }
+  }
+}
+
+if (said(look, hole)) {
+  if (!isset(f_rock_moved)) {
+    print("You don't see that here.");
+  } else {
+    if (!posn(ego, 66, 146, 158, 190)) {
+      print("You are too far away to see into it.");
+    } else {
+      if (isset(f_coins_taken)) {
+        print("The hole is empty now.");
+      } else {
+        set(f_coins_seen);
+        animate.obj(o_coins);
+        set.view(o_coins, view_coins);
+        position(o_coins, 112, 168);
+        ignore.objs(o_coins);
+        ignore.blocks(o_coins);
+        draw(o_coins);
+        show.obj(view_icon);
+        print("You look into the hole. Five gold coins glint in the dirt.");
+      }
+    }
+  }
+}
+
+if (said(look, coins)) {
+  if (isset(f_coins_taken)) {
+    print("Five gold coins stamped with a tiny sun.");
+  } else {
+    if (isset(f_coins_seen)) {
+      print("Five gold coins stamped with a tiny sun, lying in the hole.");
+    } else {
+      print("You don't see that here.");
+    }
+  }
+}
+
+if (said(get, coins)) {
+  if (isset(f_coins_taken)) {
+    print("You already have them.");
+  } else {
+    if (!isset(f_coins_seen)) {
+      print("You don't see that here.");
+    } else {
+      if (!posn(ego, 66, 146, 158, 190)) {
+        print("You are too far away.");
+      } else {
+        set(f_coins_taken);
+        get(i_coins);
+        erase(o_coins);
+        score += 5;
+        show.obj(view_icon);
+        print("You take the five gold coins.");
+      }
+    }
+  }
+}
+
+if (said(get, stone)) {
+  if (has(i_stone)) {
+    print("You already have it.");
+  } else {
+    get(i_stone);
+    score += 1;
+    print("You take the small stone.");
+  }
+}
+if (said(get, rock)) {
+  print("It is too heavy to carry. You might be able to move it.");
+}

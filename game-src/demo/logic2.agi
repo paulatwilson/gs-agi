@@ -1,0 +1,376 @@
+// LOGIC.2: the clearing. The pond shimmers, ripples spread across it and
+// every few seconds a fish leaps out with a splash.
+#include "defs.agi"
+
+if (isset(f_new_room)) {
+  pic = 2;
+  load.pic(pic);
+  draw.pic(pic);
+  show.pic();
+
+  position(ego, 20, 168);
+  draw(ego);
+
+  // ---- water glints: eight small objects, each cycling out of step ----
+  one = 1;
+  glint_cycle = 4;
+  animate.obj(4);
+  set.view(4, view_glint);
+  set.cel(4, 0);
+  position(4, 150, 134);
+  ignore.objs(4);
+  ignore.blocks(4);
+  ignore.horizon(4);
+  cycle.time(4, glint_cycle);
+  draw(4);
+  animate.obj(5);
+  set.view(5, view_glint);
+  set.cel(5, 3);
+  position(5, 214, 150);
+  ignore.objs(5);
+  ignore.blocks(5);
+  ignore.horizon(5);
+  cycle.time(5, glint_cycle);
+  draw(5);
+  animate.obj(6);
+  set.view(6, view_glint);
+  set.cel(6, 2);
+  position(6, 176, 156);
+  ignore.objs(6);
+  ignore.blocks(6);
+  ignore.horizon(6);
+  cycle.time(6, glint_cycle);
+  draw(6);
+  animate.obj(7);
+  set.view(7, view_glint);
+  set.cel(7, 1);
+  position(7, 196, 136);
+  ignore.objs(7);
+  ignore.blocks(7);
+  ignore.horizon(7);
+  cycle.time(7, glint_cycle);
+  draw(7);
+  animate.obj(8);
+  set.view(8, view_glint);
+  set.cel(8, 0);
+  position(8, 130, 146);
+  ignore.objs(8);
+  ignore.blocks(8);
+  ignore.horizon(8);
+  cycle.time(8, glint_cycle);
+  draw(8);
+  animate.obj(9);
+  set.view(9, view_glint);
+  set.cel(9, 3);
+  position(9, 236, 142);
+  ignore.objs(9);
+  ignore.blocks(9);
+  ignore.horizon(9);
+  cycle.time(9, glint_cycle);
+  draw(9);
+  animate.obj(10);
+  set.view(10, view_glint);
+  set.cel(10, 2);
+  position(10, 160, 150);
+  ignore.objs(10);
+  ignore.blocks(10);
+  ignore.horizon(10);
+  cycle.time(10, glint_cycle);
+  draw(10);
+  animate.obj(11);
+  set.view(11, view_glint);
+  set.cel(11, 1);
+  position(11, 205, 144);
+  ignore.objs(11);
+  ignore.blocks(11);
+  ignore.horizon(11);
+  cycle.time(11, glint_cycle);
+  draw(11);
+
+  fish_state = 0;
+  fish_wait = 36;
+  rip_timer = 0;
+  rip_next = 0;
+  reset(f_leg1);
+  reset(f_leg2);
+  reset(f_leg3);
+  reset(f_leg4);
+}
+
+// the west edge leads back to the meadow
+if (isset(f_ego_touched_p2)) {
+  new.room(1);
+}
+
+// ---- clear away ripples and splashes that have finished ----
+if (isset(f_rip0)) {
+  erase(o_rip0);
+  reset(f_rip0);
+}
+if (isset(f_rip1)) {
+  erase(o_rip1);
+  reset(f_rip1);
+}
+if (isset(f_rip2)) {
+  erase(o_rip2);
+  reset(f_rip2);
+}
+if (isset(f_rip3)) {
+  erase(o_rip3);
+  reset(f_rip3);
+}
+if (isset(f_rip4)) {
+  erase(o_rip4);
+  reset(f_rip4);
+}
+if (isset(f_drop0)) {
+  erase(o_drop0);
+  reset(f_drop0);
+}
+if (isset(f_drop1)) {
+  erase(o_drop1);
+  reset(f_drop1);
+}
+
+// ---- an ambient ripple every couple of seconds ----
+rip_timer++;
+if (rip_timer > 29) {
+  rip_timer = 0;
+  random(140, 232, rx);
+  random(134, 156, ry);
+  one = 1;
+  if (rip_next == 0) {
+    animate.obj(o_rip0);
+    set.view(o_rip0, view_ripple);
+    position(o_rip0, rx, ry);
+    set.cel(o_rip0, 0);
+    ignore.objs(o_rip0);
+    ignore.blocks(o_rip0);
+    ignore.horizon(o_rip0);
+    cycle.time(o_rip0, one);
+    end.of.loop(o_rip0, f_rip0);
+    draw(o_rip0);
+  }
+  if (rip_next == 1) {
+    animate.obj(o_rip1);
+    set.view(o_rip1, view_ripple);
+    position(o_rip1, rx, ry);
+    set.cel(o_rip1, 0);
+    ignore.objs(o_rip1);
+    ignore.blocks(o_rip1);
+    ignore.horizon(o_rip1);
+    cycle.time(o_rip1, one);
+    end.of.loop(o_rip1, f_rip1);
+    draw(o_rip1);
+  }
+  if (rip_next == 2) {
+    animate.obj(o_rip2);
+    set.view(o_rip2, view_ripple);
+    position(o_rip2, rx, ry);
+    set.cel(o_rip2, 0);
+    ignore.objs(o_rip2);
+    ignore.blocks(o_rip2);
+    ignore.horizon(o_rip2);
+    cycle.time(o_rip2, one);
+    end.of.loop(o_rip2, f_rip2);
+    draw(o_rip2);
+  }
+  rip_next++;
+  if (rip_next > 2) {
+    rip_next = 0;
+  }
+}
+
+// ---- the fish ----
+if (fish_state == 0) {
+  if (fish_wait > 0) {
+    fish_wait--;
+  } else {
+    random(150, 225, fx);
+    random(142, 151, fy);
+    random(5, 7, fq);
+    random(0, 1, fdir);
+    fstep = 4;
+    one = 1;
+    animate.obj(o_fish);
+    set.view(o_fish, view_fish);
+    set.loop(o_fish, fdir);
+    set.cel(o_fish, 0);
+    position(o_fish, fx, fy);
+    ignore.objs(o_fish);
+    ignore.blocks(o_fish);
+    ignore.horizon(o_fish);
+    step.size(o_fish, fstep);
+    draw(o_fish);
+
+    // take-off: a ripple, some drops and the splash
+    animate.obj(o_rip3);
+    set.view(o_rip3, view_ripple);
+    position(o_rip3, fx, fy);
+    set.cel(o_rip3, 0);
+    ignore.objs(o_rip3);
+    ignore.blocks(o_rip3);
+    ignore.horizon(o_rip3);
+    cycle.time(o_rip3, one);
+    end.of.loop(o_rip3, f_rip3);
+    draw(o_rip3);
+    animate.obj(o_drop0);
+    set.view(o_drop0, view_drops);
+    position(o_drop0, fx, fy);
+    set.cel(o_drop0, 0);
+    ignore.objs(o_drop0);
+    ignore.blocks(o_drop0);
+    ignore.horizon(o_drop0);
+    cycle.time(o_drop0, one);
+    end.of.loop(o_drop0, f_drop0);
+    draw(o_drop0);
+    sound(snd_splash, f_splash_done);
+
+    // first leg: up 18 pixels and a quarter of the way across
+    tx = fx;
+    if (fdir == 0) {
+      tx += fq;
+    } else {
+      tx -= fq;
+    }
+    ty = fy;
+    ty -= 18;
+    move.obj(o_fish, tx, ty, fstep, f_leg1);
+    fish_state = 1;
+  }
+}
+
+if (fish_state == 1 && isset(f_leg1)) {
+  // second leg: to the top of the jump
+  set.cel(o_fish, 1);
+  tx = fq;
+  tx *= 2;
+  lx = fx;
+  if (fdir == 0) {
+    lx += tx;
+  } else {
+    lx -= tx;
+  }
+  ty = fy;
+  ty -= 24;
+  move.obj(o_fish, lx, ty, fstep, f_leg2);
+  fish_state = 2;
+}
+
+if (fish_state == 2 && isset(f_leg2)) {
+  // third leg: coming down
+  set.cel(o_fish, 2);
+  tx = fq;
+  tx *= 3;
+  lx = fx;
+  if (fdir == 0) {
+    lx += tx;
+  } else {
+    lx -= tx;
+  }
+  ty = fy;
+  ty -= 18;
+  move.obj(o_fish, lx, ty, fstep, f_leg3);
+  fish_state = 3;
+}
+
+if (fish_state == 3 && isset(f_leg3)) {
+  // last leg: back into the water
+  tx = fq;
+  tx *= 4;
+  lx = fx;
+  if (fdir == 0) {
+    lx += tx;
+  } else {
+    lx -= tx;
+  }
+  move.obj(o_fish, lx, fy, fstep, f_leg4);
+  fish_state = 4;
+}
+
+if (fish_state == 4 && isset(f_leg4)) {
+  // landing: ripple and drops where it went in
+  erase(o_fish);
+  one = 1;
+  animate.obj(o_rip4);
+  set.view(o_rip4, view_ripple);
+  position(o_rip4, lx, fy);
+  set.cel(o_rip4, 0);
+  ignore.objs(o_rip4);
+  ignore.blocks(o_rip4);
+  ignore.horizon(o_rip4);
+  cycle.time(o_rip4, one);
+  end.of.loop(o_rip4, f_rip4);
+  draw(o_rip4);
+  animate.obj(o_drop1);
+  set.view(o_drop1, view_drops);
+  position(o_drop1, lx, fy);
+  set.cel(o_drop1, 0);
+  ignore.objs(o_drop1);
+  ignore.blocks(o_drop1);
+  ignore.horizon(o_drop1);
+  cycle.time(o_drop1, one);
+  end.of.loop(o_drop1, f_drop1);
+  draw(o_drop1);
+  fish_state = 0;
+  random(60, 135, fish_wait);
+}
+
+// ---- what you can say here ----
+if (said(look)) {
+  print("A quiet clearing with a still pond. A sandy trail leads back west.");
+}
+if (said(look, tree)) {
+  print("A leafy tree leaning over the water.");
+}
+if (said(look, rock)) {
+  print("Flat grey rocks, warm from the sun.");
+}
+if (said(look, path)) {
+  print("The sandy trail runs west, back to the meadow.");
+}
+if (said(look, pond)) {
+  print("Clear, cool water. A few lily pads drift near the middle, and now and then a fish leaps.");
+}
+if (said(look, lily)) {
+  print("Round green pads. One has a tiny white flower.");
+}
+if (said(look, flower)) {
+  print("Small wildflowers grow in the long grass.");
+}
+if (said(look, fish)) {
+  if (fish_state > 0) {
+    print("A silver fish leaps clear of the water.");
+  } else {
+    print("You can't see a fish right now. Ripples spread where one was a moment ago.");
+  }
+}
+if (said(get, fish)) {
+  print("It is far too quick for you.");
+}
+if (said(move, rock)) {
+  print("You push the rock, but it will not budge.");
+}
+if (said(look, stone)) {
+  print("You don't see that here.");
+}
+if (said(get, stone)) {
+  print("You don't see that here.");
+}
+if (said(look, hole)) {
+  print("You don't see that here.");
+}
+if (said(look, coins)) {
+  if (isset(f_coins_taken)) {
+    print("Five gold coins stamped with a tiny sun.");
+  } else {
+    print("You don't see that here.");
+  }
+}
+if (said(get, coins)) {
+  if (isset(f_coins_taken)) {
+    print("You already have them.");
+  } else {
+    print("You don't see that here.");
+  }
+}

@@ -1,0 +1,3 @@
+; Inventory items: name, starting room (0 = nowhere), display name.
+i_stone  1 "small stone"
+i_coins  0 "five gold coins"

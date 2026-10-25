@@ -1,0 +1,143 @@
+; Room 1: meadow (generated from the approved mockup)
+
+; backdrop
+pri off
+ctl off
+vis 1
+poly 0 8 320 8 320 80 0 80
+vis 15
+ellipse 58 30 24 6
+ellipse 76 25 16 6
+ellipse 236 42 28 6
+ellipse 254 36 15 5
+ellipse 150 58 12 3
+vis 5
+poly 0 80 0 66 38 58 88 68 140 60 196 70 252 58 320 66 320 80
+vis 4
+poly 0 80 320 80 320 184 0 184
+vis 13
+loop 130 183 158 160 190 138 240 122 319 114 319 140 262 150 222 166 196 183
+flood 230 150
+vis 14
+line 24 100 25 100
+line 24 101 25 101
+vis 15
+line 40 128 41 128
+line 40 129 41 129
+vis 14
+line 96 142 97 142
+line 96 143 97 143
+vis 15
+line 120 112 121 112
+line 120 113 121 113
+vis 14
+line 210 100 211 100
+line 210 101 211 101
+vis 15
+line 150 176 151 176
+line 150 177 151 177
+vis 14
+line 290 172 291 172
+line 290 173 291 173
+vis 15
+line 30 170 31 170
+line 30 171 31 171
+vis 14
+line 300 96 301 96
+line 300 97 301 97
+vis 15
+line 250 176 251 176
+line 250 177 251 177
+
+; ground shadows
+vis 5
+ellipse 68 152 26 5
+vis 5
+ellipse 266 106 18 4
+vis 5
+ellipse 155 98 14 3
+vis 5
+ellipse 237 177 29 5
+vis 5
+ellipse 207 154 10 2
+
+; trees and rocks, back to front. pri is the baseline row: a walker above it is hidden
+; tree at 152,98
+pri 98
+vis 8
+poly 149 98 155 98 154 77 150 77
+vis 9
+poly 153 98 155 98 154 77 153 77
+vis 6
+ellipse 152 69 17 13
+ellipse 143 73 9 8
+ellipse 162 72 9 8
+vis 4
+ellipse 149 67 10 7
+ellipse 142 72 5 4
+ellipse 158 63 6 4
+; tree at 262,106
+pri 106
+vis 8
+poly 258 106 266 106 265 79 259 79
+vis 9
+poly 263 106 266 106 265 79 263 79
+vis 6
+ellipse 262 69 21 17
+ellipse 250 75 12 10
+ellipse 275 73 12 10
+vis 4
+ellipse 258 66 13 9
+ellipse 249 73 6 5
+ellipse 270 62 8 6
+; tree at 62,152
+pri 152
+vis 8
+poly 57 152 67 152 66 114 58 114
+vis 9
+poly 63 152 67 152 66 114 63 114
+vis 6
+ellipse 62 100 30 24
+ellipse 45 108 17 14
+ellipse 80 106 17 14
+vis 4
+ellipse 56 96 18 13
+ellipse 43 106 9 7
+ellipse 73 90 11 8
+; small stone at 205,153
+pri 153
+vis 11
+poly 197 153 199 148 203 144 209 145 213 149 214 153
+vis 10
+poly 199 148 203 144 206 145 202 149
+vis 12
+poly 214 153 213 149 208 150 207 153
+; boulder at 232,176
+pri 176
+vis 11
+poly 209 176 214 160 227 150 242 153 254 166 257 176
+vis 10
+poly 214 160 227 150 235 154 224 166
+vis 12
+poly 257 176 254 166 240 168 237 176
+pri off
+
+; control layer: 1 blocks walking, 2 is an exit
+vis off
+ctl 2
+poly 312 92 320 92 320 184 312 184
+; tree footprint
+ctl 1
+poly 56 149 68 149 68 153 56 153
+; tree footprint
+ctl 1
+poly 257 103 267 103 267 107 257 107
+; tree footprint
+ctl 1
+poly 148 95 156 95 156 99 148 99
+; boulder footprint
+ctl 1
+poly 210 168 255 168 255 177 210 177
+; small stone footprint
+ctl 1
+poly 197 150 213 150 213 154 197 154

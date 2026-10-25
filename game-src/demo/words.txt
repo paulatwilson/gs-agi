@@ -1,0 +1,23 @@
+; Word groups for the parser. A line is "group: word word ...". Every word
+; in a group means the same thing to said(). Group "ignore" words are
+; skipped when the player types them.
+ignore:    a an the at in into to up on some it inside
+look:      look examine l x search
+get:       get take grab pick
+inventory: inventory inv i
+move:      move push shove slide roll
+tree:      tree trees oak
+rock:      rock rocks
+boulder:   boulder
+stone:     stone pebble small
+room:      around room here
+me:        me self myself woman lady girl
+path:      path trail sand
+pond:      pond water lake
+lily:      lily lilies pads
+fish:      fish trout
+flower:    flower flowers
+sky:       sky clouds cloud
+hills:     hills
+hole:      hole ground
+coins:     coins coin gold money

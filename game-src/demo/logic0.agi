@@ -1,0 +1,79 @@
+// LOGIC.0 runs every cycle. It starts the game, sets the walker up on
+// each new screen, runs the current room's logic and handles the replies
+// that are the same everywhere.
+#include "defs.agi"
+
+if (isset(f_first_time)) {
+  reset(f_first_time);
+  max_score = 6;
+  time_delay = 2;
+  set(f_music_done);
+  new.room(1);
+}
+
+if (isset(f_new_room)) {
+  ego_step = 3;
+  ego_cycle = 3;
+  animate.obj(ego);
+  set.view(ego, view_ego);
+  set.loop(ego, 2);
+  set.cel(ego, 0);
+  step.size(ego, ego_step);
+  cycle.time(ego, ego_cycle);
+  set.horizon(92);
+}
+
+// the quiet background tune; its done-flag restarts it
+if (isset(f_music_done)) {
+  sound(snd_music, f_music_done);
+}
+
+call(cur_room);
+
+// a word the dictionary does not have
+if (isset(f_entered_cli) && !isset(f_said_ok) && unknown_word > 0) {
+  set(f_said_ok);
+  print("I don't know the word \"%u\".");
+}
+
+if (said(look, me)) {
+  print("A woman in a red dress, with plenty of road still ahead.");
+}
+if (said(look, sky)) {
+  print("Puffy white clouds drift by.");
+}
+if (said(look, hills)) {
+  print("Soft green hills roll away in the distance.");
+}
+if (said(inventory)) {
+  status();
+}
+if (said(move, boulder)) {
+  print("It is far too heavy to move.");
+}
+if (said(move, tree)) {
+  print("Trees stay where they are.");
+}
+if (said(look)) {
+  print("There is nothing special to see.");
+}
+if (said(get)) {
+  print("Get what?");
+}
+if (said(move)) {
+  print("Move what?");
+}
+if (said(move, rest)) {
+  print("You can't move that.");
+}
+if (said(get, rest)) {
+  print("You can't take that.");
+}
+if (said(look, rest)) {
+  print("You don't see that here.");
+}
+
+// nothing above understood the line
+if (isset(f_entered_cli) && !isset(f_said_ok)) {
+  print("You need to say what to do.");
+}

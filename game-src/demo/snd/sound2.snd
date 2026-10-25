@@ -1,0 +1,14 @@
+; Rock drag (SOUND.2) (generated from the approved mockup)
+kind effect
+gen noise
+note 52 90 8
+note 50 100 10
+note 53 95 8
+note 48 100 10
+note 51 80 10
+note 47 60 8
+gen saw
+note 33 70 12
+note 31 80 14
+note 34 70 12
+note 30 60 16
