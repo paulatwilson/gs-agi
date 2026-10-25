@@ -1,15 +1,13 @@
 /*
- * sound_iigs.h - Apple IIGS Sound Toolset backend, driving the
- * Ensoniq DOC chip through the standard Sound Manager (not direct
- * $C0Ex port twiddling, so it behaves under GS/OS and coexists with
- * the rest of the toolbox).
+ * audio.h - the SOUND.n loader and note sequencer (sound.c), driving
+ * a backend through sound_hw.h.
  *
  * logic.c only knows "play sound resource N, and set flag F when it
  * finishes" / "stop whatever is playing" -- it has no idea an
  * Ensoniq DOC or a wavetable even exists.
  */
-#ifndef GSAGI_SOUND_IIGS_H
-#define GSAGI_SOUND_IIGS_H
+#ifndef GSAGI_AUDIO_H
+#define GSAGI_AUDIO_H
 
 #include "agitypes.h"
 

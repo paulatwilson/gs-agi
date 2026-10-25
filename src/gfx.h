@@ -1,5 +1,5 @@
 /*
- * gfx_iigs.h - Apple IIGS QuickDraw II rendering backend.
+ * gfx.h - the portable renderer (gfx.c): picture, objects, text boxes.
  *
  * Owns the 320x200 Super Hi-Res screen: the picture/background layer,
  * the animated-object ("view table") sprites, the status line and
@@ -28,8 +28,8 @@
  * plugs in later: today they clear to a flat color / draw a
  * placeholder box so the engine runs end to end.
  */
-#ifndef GSAGI_GFX_IIGS_H
-#define GSAGI_GFX_IIGS_H
+#ifndef GSAGI_GFX_H
+#define GSAGI_GFX_H
 
 #include "agitypes.h"
 
@@ -50,9 +50,12 @@ void gfx_set_text_attribute(int fg, int bg);
 /* ---- background picture layer (seam for a future PICTURE decoder) ---- */
 void gfx_load_picture(int picnum);
 void gfx_draw_picture(int picnum, int clear_first);
+int  gfx_ctl_at(int x, int y);		/* control-layer value at a pixel */
+int  gfx_priority_at(int x, int y);
 void gfx_show_picture(void);
 void gfx_show_priority_screen(void);
 void gfx_shake_screen(int count);
+void gfx_dump_frame(const char *path);	/* host test aid: save a PPM */
 
 /* ---- animated objects / sprites ---- */
 void gfx_set_view(int obj, int view);
@@ -67,6 +70,7 @@ void gfx_print_text(const char *text, int row, int col, int width,
                      int fg, int bg);
 void gfx_clear_lines(int top, int bottom, int color);
 void gfx_clear_text_rect(int x1, int y1, int x2, int y2, int color);
+void gfx_set_message_icon(int view);
 void gfx_write_status(int score, int max_score, int sound_on);
 void gfx_message_box(const char *msg);
 int  gfx_selection_box(const char *msg, const char *const *buttons);

@@ -33,8 +33,8 @@
 #include "logic.h"
 #include "object.h"
 #include "vocab.h"
-#include "gfx_iigs.h"
-#include "sound_iigs.h"
+#include "gfx.h"
+#include "audio.h"
 #include "keyboard.h"
 #include "syshooks.h"
 

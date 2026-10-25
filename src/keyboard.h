@@ -19,6 +19,16 @@
 void kbd_init(void);
 void kbd_shutdown(void);
 
+/*
+ * Walking direction wanted right now, AGI numbering (0 none, 1 up,
+ * 2 up-right ... 8 up-left). Host: arrow keys held; IIgs: sticky
+ * heading set by arrow-key taps.
+ */
+int  kbd_direction(void);
+
+/* Marks every set.key() binding that matches key as occurred. */
+void kbd_dispatch_controllers(int key);
+
 /* Non-blocking: returns 0 if no key is waiting. */
 int  kbd_poll(void);
 

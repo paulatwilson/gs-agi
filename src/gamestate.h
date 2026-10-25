@@ -114,6 +114,7 @@ struct vt_entry {
 	UINT8   current_cel, num_cels;
 
 	UINT8   step_size;
+	UINT16  step_frac;		/* sub-pixel remainder, 1/256 px */
 	UINT8   step_time, step_time_count;
 	UINT8   cycle_time, cycle_time_count;
 	UINT8   direction;

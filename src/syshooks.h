@@ -8,6 +8,8 @@
 #ifndef GSAGI_SYSHOOKS_H
 #define GSAGI_SYSHOOKS_H
 
+#include "agitypes.h"
+
 void sys_idle_pump(void);
 
 /*
@@ -18,5 +20,15 @@ void sys_idle_pump(void);
  * building GS/OS pathnames itself.
  */
 int sys_load_room(int n);
+
+/*
+ * Builds the path of resource file name (e.g. "PIC.1") inside the game
+ * directory into out, which holds outsize bytes. SDL: the directory
+ * given on the command line, default "game/". IIgs: "GAME:".
+ */
+void sys_game_path(char *out, int outsize, const char *name);
+
+/* Time in 1/60 s ticks since startup. */
+UINT32 sys_ticks(void);
 
 #endif /* GSAGI_SYSHOOKS_H */
