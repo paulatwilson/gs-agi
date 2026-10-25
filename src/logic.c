@@ -34,6 +34,7 @@
 #include "object.h"
 #include "vocab.h"
 #include "gfx.h"
+#include "view.h"
 #include "audio.h"
 #include "keyboard.h"
 #include "syshooks.h"
@@ -232,12 +233,22 @@ static struct agi_logic *cur_logic;
 
 #define cmd(x) static void cmd_##x(UINT8 *p)
 
+/* Reloads an object's derived fields after its view, loop or cel changed. */
+static void refresh_object(struct vt_entry *v)
+{
+	view_load(v->current_view);
+	view_update_object(v);
+}
+
+/* Objects are anchored at their horizontal centre. */
 static void clamp_position(struct vt_entry *v)
 {
-	if (v->x_pos < 0)
-		v->x_pos = 0;
-	if (v->x_pos + v->x_size > GFX_WIDTH)
-		v->x_pos = (SINT16)(GFX_WIDTH - v->x_size);
+	int half = v->x_size / 2;
+
+	if (v->x_pos < half)
+		v->x_pos = (SINT16)half;
+	if (v->x_pos > GFX_WIDTH - 1 - half)
+		v->x_pos = (SINT16)(GFX_WIDTH - 1 - half);
 	if (v->y_pos < game.horizon)
 		v->y_pos = (SINT16)game.horizon;
 	if (v->y_pos >= GFX_HEIGHT)
@@ -303,6 +314,7 @@ cmd(unanimate_all) {
 cmd(draw) {
 	if (vt.flags & VT_DRAWN)
 		return;
+	refresh_object(&vt);
 	if (vt.x_size <= 0 || vt.y_size <= 0)
 		return;
 	vt.flags |= VT_UPDATE | VT_DRAWN;
@@ -337,14 +349,14 @@ cmd(reposition) {
 
 	clamp_position(&vt);
 }
-cmd(set_view)     { vt.current_view = p1; }
-cmd(set_view_f)   { vt.current_view = _v[p1]; }
-cmd(set_loop)     { vt.current_loop = p1; gfx_set_loop(p0, p1); }
-cmd(set_loop_f)   { vt.current_loop = _v[p1]; gfx_set_loop(p0, _v[p1]); }
+cmd(set_view)     { vt.current_view = p1; refresh_object(&vt); }
+cmd(set_view_f)   { vt.current_view = _v[p1]; refresh_object(&vt); }
+cmd(set_loop)     { vt.current_loop = p1; refresh_object(&vt); gfx_set_loop(p0, p1); }
+cmd(set_loop_f)   { vt.current_loop = _v[p1]; refresh_object(&vt); gfx_set_loop(p0, _v[p1]); }
 cmd(fix_loop)     { vt.flags |= VT_FIX_LOOP; }
 cmd(release_loop) { vt.flags &= (UINT16)~VT_FIX_LOOP; }
-cmd(set_cel)      { vt.current_cel = p1; gfx_set_cel(p0, p1); vt.flags &= (UINT16)~VT_DONTUPDATE; }
-cmd(set_cel_f)    { vt.current_cel = _v[p1]; gfx_set_cel(p0, _v[p1]); vt.flags &= (UINT16)~VT_DONTUPDATE; }
+cmd(set_cel)      { vt.current_cel = p1; refresh_object(&vt); gfx_set_cel(p0, p1); vt.flags &= (UINT16)~VT_DONTUPDATE; }
+cmd(set_cel_f)    { vt.current_cel = _v[p1]; refresh_object(&vt); gfx_set_cel(p0, _v[p1]); vt.flags &= (UINT16)~VT_DONTUPDATE; }
 cmd(last_cel)     { _v[p1] = vt.num_cels ? (UINT8)(vt.num_cels - 1) : 0; }
 cmd(current_cel)  { _v[p1] = vt.current_cel; }
 cmd(current_loop) { _v[p1] = vt.current_loop; }
@@ -371,8 +383,8 @@ cmd(distance) {
 	int d;
 
 	if ((v0->flags & VT_DRAWN) && (v1->flags & VT_DRAWN)) {
-		int x1 = v0->x_pos + v0->x_size / 2;
-		int x2 = v1->x_pos + v1->x_size / 2;
+		int x1 = v0->x_pos;
+		int x2 = v1->x_pos;
 		int dx = x1 > x2 ? x1 - x2 : x2 - x1;
 		int dy = v0->y_pos > v1->y_pos ? v0->y_pos - v1->y_pos
 		                                : v1->y_pos - v0->y_pos;
@@ -756,21 +768,21 @@ static int test_posn(UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 static int test_obj_in_box(UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	struct vt_entry *v = &game.view_table[n];
-	return v->x_pos >= x1 && v->y_pos >= y1 &&
-	       (v->x_pos + v->x_size - 1) <= x2 && v->y_pos <= y2;
+	return v->x_pos - v->x_size / 2 >= x1 && v->y_pos >= y1 &&
+	       v->x_pos + v->x_size / 2 <= x2 && v->y_pos <= y2;
 }
 
 static int test_obj_centre(UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	struct vt_entry *v = &game.view_table[n];
-	int cx = v->x_pos + v->x_size / 2;
+	int cx = v->x_pos;
 	return cx >= x1 && cx <= x2 && v->y_pos >= y1 && v->y_pos <= y2;
 }
 
 static int test_obj_right(UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	struct vt_entry *v = &game.view_table[n];
-	int rx = v->x_pos + v->x_size - 1;
+	int rx = v->x_pos + v->x_size / 2;
 	return rx >= x1 && rx <= x2 && v->y_pos >= y1 && v->y_pos <= y2;
 }
 
@@ -854,7 +866,8 @@ static int test_said(UINT8 nwords, UINT8 *cc)
 		}
 	}
 
-	if (nwords != 0 && z != 9999)
+	/* the whole line and the whole pattern must match, unless it ends in rest */
+	if ((nwords != 0 || n != 0) && z != 9999)
 		return FALSE;
 
 	setflag(F_said_accepted_input, TRUE);
