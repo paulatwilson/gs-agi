@@ -15,8 +15,8 @@ displayed as doubled EGA pixels; running those resources here would
 just be pixel-doubling in a different costume. This engine doesn't
 read or play original Sierra AGI game resources -- it borrows AGI's
 bytecode *mechanics* (the parser/logic-VM/object-location model) for
-original games, with its own native-resolution art pipeline still
-to be designed (see "Next steps"). Every coordinate in `logic.c`/
+original games, with its own native-resolution art pipeline in
+`tools/`. Every coordinate in `logic.c`/
 `gamestate.h` is a real screen pixel, 1:1, no scale factor anywhere.
 
 ## Layout
@@ -25,128 +25,127 @@ to be designed (see "Next steps"). Every coordinate in `logic.c`/
 src/
   agitypes.h      fixed-width types + resource ceilings (65816-sized)
   gamestate.h     struct agi_game, vt_entry, word/object/logic structs
+  resfmt.h        PIC and VIEW formats (shared with tools/)
+  opcodes.h       AGI opcode table (shared with tools/agic.c)
   util.c/.h       byte helpers, var/flag accessors, AGI text decrypt
 
   vocab.c/.h      dictionary (WORDS.TOK) lookup + sentence tokeniser
   object.c/.h     OBJECT resource loader + inventory location tracking
-  logic.c/.h      LOGIC resource loader + the bytecode VM (~183 opcodes)
+  logic.c/.h      LOGIC resource loader + the bytecode VM
+  pic.c/.h        PIC decoder: visual, priority and control layers
+  view.c/.h       VIEW loader, cel lookup, perspective scaling
+  motion.c/.h     per-cycle stepper: walking, cel cycling, collisions
+  gfx.c/.h        renderer: picture + objects, text, boxes (portable)
+  sound.c, audio.h  SOUND.n loader and note sequencer (portable)
+  keyboard.c/.h   line editor and set.key() matching (portable half)
+  video.h         backend seam: present a 320x200 frame + palette
+  sound_hw.h      backend seam: set a generator's note
+  syshooks.h      seam from core back to main.c (paths, rooms, idle, ticks)
 
-  gfx_iigs.c/.h   QuickDraw II: SHR screen, parser input box, sprites
-  sound_iigs.c/.h Sound Toolset: Ensoniq DOC-driven SFX/music
-  keyboard.c/.h   Event Manager polling + line editor
-  syshooks.h      the two calls logic.c reaches into main.c through
+  main.c          startup -> real-time game loop -> shutdown
 
-  main.c          toolbox startup -> main loop -> clean GS/OS shutdown
+  sdl/            host backend: video_sdl.c, keyboard_sdl.c, sound_sdl.c
+  iigs/           Apple IIgs backend: video_iigs.c, keyboard_iigs.c,
+                  sound_iigs.c (kbd_init/poll/direction live here)
+
+tools/            picc, viewc, sndc, agic, picview (host-side authoring)
+game-src/demo/    the demo game's sources
 ```
+
+Everything outside `src/sdl/` and `src/iigs/` is portable C and must not
+include SDL or toolbox headers.
 
 ## What's a faithful port vs. what's new vs. what's a stub
 
-**Ported from Sarien** (`src/words.c`, `src/objects.c`, `src/logic.c` +
-`src/op_cmd.c` + `src/op_test.c`), with SDL/mouse/menu/debug-console
-code stripped and heap-per-word/per-object allocation replaced by
-fixed static arrays:
+**Ported from Sarien**: the WORDS.TOK dictionary search and sentence
+tokeniser (`vocab.c`), OBJECT loading and location tracking
+(`object.c`), and the logic VM (`logic.c`: 183 action opcodes, 19 test
+opcodes). SDL/mouse/menu/debug-console code was stripped and
+heap-per-word/per-object allocation replaced by fixed static arrays.
 
-- `vocab_find_word()` -- the WORDS.TOK dictionary search, byte-for-byte
-  the same algorithm (it's resource-format logic, not host logic).
-- `vocab_parse_input()` -- sentence tokenising into `game.ego_words[]`.
-- `object_load()`/`object_get_location()`/`object_set_location()` --
-  OBJECT resource decode and location tracking.
-- `logic_load()` (message-block unpacking) and `logic_run()` /
-  `test_if_code()` -- the full opcode dispatch table (183 action
-  opcodes, 19 test opcodes), argument-count tables regenerated
-  programmatically from Sarien's `op_dbg.c` rather than transcribed
-  by hand (the hand-transcribed first draft had a silent off-by-one
-  past opcode 0x44 -- see the extraction script output/history if you
-  want to re-derive it against a different Sarien revision).
+**Written fresh:** the native 320x200 PIC and VIEW formats and their
+decoders, the renderer, the motion stepper, the sound sequencer, both
+platform backends and `main.c`.
 
-**Written fresh:** `gfx_iigs.c`, `sound_iigs.c`, `keyboard.c`,
-`main.c` -- there is no SDL equivalent to port here, this is the
-actual IIGS toolbox integration.
+**Not implemented:**
 
-**Deliberately out of scope / stubbed** (none of these were in the
-"extract vocab/logic/object, add graphics/sound/app-shell" brief, and
-each is a substantial project in its own right):
-
-- **A native picture/cel resource format and its decoder.** Sierra's
-  vector-picture fill language and RLE cel format are 160x168-space
-  formats and are intentionally *not* what this needs -- see the note
-  at the top of this file. `gfx_load_picture()`/`gfx_draw_object()`
-  draw placeholders until a real 320x200 format (bitmap or RLE, plus
-  per-scanline SHR palette/SCB data) is designed and a decoder written
-  for it.
-- **The motion stepper** (`move.obj`, `follow.ego`, `wander`'s actual
-  per-frame movement). The opcodes update `vt_entry` bookkeeping
-  correctly; nothing currently advances position frame-to-frame.
-- **Menu bar opcodes** (`set.menu`, `enable.item`, ...) and **mouse
-  opcodes** are no-ops.
-- **Save/restore game** -- stubbed with a "not implemented" message
-  box.
-- **Sierra's VOL/DIR volume format.** This engine expects each
-  resource pre-extracted to its own flat GS/OS file (see below), not
-  packed into Sierra's original multi-resource volume files.
+- Save/restore game: a "not implemented" message box stands in.
+- `wander` and `follow.ego` set bookkeeping but do not move objects.
+- Menu and mouse opcodes are no-ops.
+- IIgs `shake.screen` is a no-op, and IIgs keys are tap-to-walk.
+- Sierra's VOL/DIR volume format, and Sierra resources in general.
 
 ## On-disk resource convention
 
-The engine ships no game data. A game's resources are freshly
-authored for it, not extracted from an existing Sierra title. Resources load from a `GAME:` prefixed
-GS/OS path (see `main.c`):
+The engine ships no game data. Each resource is a flat file in a game
+directory: `game/` on the host (or the directory given as the first
+argument), the `GAME:` prefix on the IIgs. All paths are built by
+`sys_game_path()` in `main.c`.
 
-| File             | Contents                                              |
-|------------------|--------------------------------------------------------|
-| `GAME:WORDS.TOK` | Dictionary resource, Sierra's byte format (it's plain text-to-id data, resolution-independent -- reusing the format is just convenient, not a compatibility goal) |
-| `GAME:OBJECT`    | Object-name/location resource, same reasoning as WORDS.TOK |
-| `GAME:LOGIC.n`   | Decompressed LOGIC bytecode #n for this game, compiled by an AGI-dialect compiler targeting 320x200 coordinates throughout -- **not** a Sierra game's original LOGIC.n (those encode position/size literals for 160x168 space and would place everything wrong here) |
-| `GAME:SOUND.n`   | This engine's own DOC note-list format -- see `sound_iigs.c`'s header |
-
-A `GAME` prefix needs to exist as a GS/OS pathname (a subdirectory, or
-a defined prefix) pointing at the game's own compiled resource tree.
+| File             | Contents |
+|------------------|----------|
+| `WORDS.TOK`      | Dictionary, Sierra's byte format (plain word-to-id data) |
+| `OBJECT`         | Object names and start locations, same reasoning |
+| `LOGIC.n`        | Compiled logic #n, built by `tools/agic` with 320x200 coordinates throughout, not a Sierra game's LOGIC |
+| `PIC.n`          | Native picture (`tools/picc`), see `resfmt.h` |
+| `VIEW.n`         | Native view (`tools/viewc`), see `resfmt.h` |
+| `SOUND.n`        | Note list (`tools/sndc`), see `audio.h` |
 
 ## Building
 
-This was written without an ORCA/C install or the real Apple IIGS
-Toolbox headers in hand, so treat it as a strong first draft, not a
-verified build:
+### Host (SDL2), macOS first
 
-- `gfx_iigs.c`/`sound_iigs.c`/`keyboard.c`/`main.c` use toolbox call
-  names and argument shapes as documented in the *Apple IIGS Toolbox
-  Reference* (QuickDraw II, Sound Tool Set, Event Manager, Tool
-  Locator, Memory Manager chapters). Check them against your actual
-  `<quickdraw.h>`/`<sound.h>`/`<event.h>`/`<locator.h>`/`<memory.h>` --
-  argument order and a few call names are the likeliest mismatches.
-- `vocab.c`/`object.c`/`logic.c`/`util.c` are plain ANSI C with no
-  toolbox dependency at all and should compile against any C89
-  compiler as a sanity check before moving to ORCA/C.
+```
+cmake -S . -B build && cmake --build build   # engine, tools and the demo (into game/)
+./build/gsagi game/                          # play the demo
+```
 
-In ORCA Shell:
+Arrow keys walk, typing fills the input line at the bottom, Enter
+parses it. The game runs in real time: every `V_time_delay * 2` ticks
+of 1/60 s it runs the logic cycle and then steps the objects.
+
+Headless runs use the `GSAGI_SCRIPT` test aid, which drives the
+keyboard and can save frames:
+
+```
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy \
+GSAGI_SCRIPT="500:+right;1500:-right;1600:text=look tree;1700:enter;2500:dump=frame.ppm;3000:quit" \
+./build/gsagi game/
+```
+
+`build/picview out.ppm game/PIC.1` renders a picture alone.
+
+### Apple IIgs, in ORCA Shell
+
+This has never been built against a real ORCA/C install, so treat it as
+a first draft. Toolbox call names and shapes in `src/iigs/` and the
+`__ORCAC__` blocks of `main.c` are unverified against your
+`<event.h>`/`<sound.h>`/`<locator.h>`/`<memory.h>`. The portable core
+must stay strict C89 and 16-bit-int safe
+(`cc -std=c89 -pedantic -fsyntax-only` on the core files stays clean).
 
 ```
 cc src/util.c -o obj/util.o
 cc src/vocab.c -o obj/vocab.o
 cc src/object.c -o obj/object.o
 cc src/logic.c -o obj/logic.o
-cc src/gfx_iigs.c -o obj/gfx_iigs.o
-cc src/sound_iigs.c -o obj/sound_iigs.o
+cc src/pic.c -o obj/pic.o
+cc src/view.c -o obj/view.o
+cc src/motion.c -o obj/motion.o
+cc src/gfx.c -o obj/gfx.o
+cc src/sound.c -o obj/sound.o
 cc src/keyboard.c -o obj/keyboard.o
+cc src/iigs/video_iigs.c -o obj/video_iigs.o
+cc src/iigs/keyboard_iigs.c -o obj/keyboard_iigs.o
+cc src/iigs/sound_iigs.c -o obj/sound_iigs.o
 cc src/main.c -o obj/main.o
-link obj/util.o obj/vocab.o obj/object.o obj/logic.o obj/gfx_iigs.o \
-     obj/sound_iigs.o obj/keyboard.o obj/main.o -o GSAGI -t S16
+link obj/util.o obj/vocab.o obj/object.o obj/logic.o obj/pic.o obj/view.o \
+     obj/motion.o obj/gfx.o obj/sound.o obj/keyboard.o obj/video_iigs.o \
+     obj/keyboard_iigs.o obj/sound_iigs.o obj/main.o -o GSAGI -t S16
 ```
 
-(flag names/`-t S16` output-type syntax per your ORCA/C version's
-`link` reference -- adjust as needed.)
-
-## Next steps, roughly in the order they unblock a playable game
-
-1. Design a native 320x200 picture/cel resource format (bitmap or
-   RLE, plus per-scanline SHR palette/SCB data) and its decoder,
-   feeding `gfx_iigs.c`'s seams. Not a Sierra-format decoder -- see
-   the note at the top of this file.
-2. A motion stepper (`motion.c`-equivalent) driven once per
-   `sys_idle_pump()`/main-loop tick.
-3. An authoring tool (or hand-written note lists) producing a
-   game's `SOUND.n` DOC note-list files.
-4. Save/restore game, backed by a GS/OS file instead of the message
-   box currently standing in for it.
+(Flag names and the `-t S16` syntax follow your ORCA/C version's `link`
+reference.)
 
 ## Licence
 
