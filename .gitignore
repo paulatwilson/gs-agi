@@ -11,5 +11,7 @@ obj/
 AGENTS.md
 CLAUDE.md
 copilot-instructions.md
-build*
+build
+build-linux*
+build-windows*
 remove_claude.sh
