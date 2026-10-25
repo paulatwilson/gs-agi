@@ -1,27 +1,26 @@
 /*
- * main.c - application skeleton: brings up the GS/OS toolsets,
- * drives the text-parser main loop, and shuts everything back down
- * cleanly.
+ * main.c - application skeleton: brings up the platform, runs the
+ * real-time game cycle, and shuts everything back down.
  *
- * This is deliberately a simple, turn-based cadence (run the logic,
- * then block for one typed line) rather than a true real-time frame
- * loop -- there is no motion-stepper module in this engine yet (see
- * gfx_iigs.h) for animated objects to need polling between
- * keystrokes. When that lands, swap the blocking kbd_read_line() call
- * below for non-blocking kbd_poll() inside the same while loop; every
- * other piece here stays the same.
+ * Every V_time_delay * 2 ticks of 1/60 s the loop sets the ego's
+ * direction from the keyboard, runs the logic scripts and then steps
+ * the animated objects (motion.c). Between cycles it keeps the screen
+ * and sound serviced and reads typed keys without blocking; Enter
+ * parses the input line. kbd_read_line() is only used by get.string
+ * and get.num.
  *
  * Tool Locator/Memory Manager call names follow the Apple IIGS
- * Toolbox Reference; verify against your ORCA/C <locator.h>/
- * <memory.h> before trusting this to link unmodified -- see the
- * same note in gfx_iigs.c/sound_iigs.c/keyboard.c.
+ * Toolbox Reference; they are unverified against a real ORCA/C
+ * install (see README).
  */
 #include <string.h>
 #include <stdio.h>
 
+#ifdef __ORCAC__
 #include <types.h>
 #include <locator.h>
 #include <memory.h>
+#endif
 
 #include "agitypes.h"
 #include "util.h"
@@ -29,19 +28,29 @@
 #include "vocab.h"
 #include "object.h"
 #include "logic.h"
-#include "gfx_iigs.h"
-#include "sound_iigs.h"
+#include "motion.h"
+#include "gfx.h"
+#include "audio.h"
+#include "video.h"
 #include "keyboard.h"
 #include "syshooks.h"
 
 struct agi_game game;
 
-#define GAME_DIR  "GAME:"	/* GS/OS pathname prefix for resources */
+#ifdef __ORCAC__
+#define DEFAULT_GAME_DIR  "GAME:"	/* GS/OS pathname prefix for resources */
+#else
+#define DEFAULT_GAME_DIR  "game/"
+#endif
+
+static char game_dir[200] = DEFAULT_GAME_DIR;
 
 static int startup_toolsets(void)
 {
+#ifdef __ORCAC__
 	TLStartUp();
 	MMStartUp();
+#endif
 
 	if (gfx_init() != err_OK)
 		return err_NotEnoughMemory;
@@ -59,15 +68,37 @@ static void shutdown_toolsets(void)
 	sound_shutdown();
 	kbd_shutdown();
 	gfx_shutdown();
+#ifdef __ORCAC__
 	MMShutDown();
 	TLShutDown();
+#endif
 }
 
-/* ---- the one filesystem-naming seam logic.c reaches through ---- */
+/* ---- the seams core code reaches the app through (syshooks.h) ---- */
+void sys_game_path(char *out, int outsize, const char *name)
+{
+	int dl = (int)strlen(game_dir);
+	int nl = (int)strlen(name);
+
+	if (dl + nl >= outsize) {
+		out[0] = '\0';
+		return;
+	}
+	memcpy(out, game_dir, dl);
+	memcpy(out + dl, name, nl + 1);
+}
+
+UINT32 sys_ticks(void)
+{
+	return video_ticks();
+}
+
 int sys_load_room(int n)
 {
-	char path[64];
-	sprintf(path, GAME_DIR "LOGIC.%d", n);
+	char name[16], path[256];
+
+	sprintf(name, "LOGIC.%d", n);
+	sys_game_path(path, sizeof(path), name);
 	return logic_load(n, path);
 }
 
@@ -79,12 +110,16 @@ void sys_idle_pump(void)
 
 static int load_game_resources(void)
 {
-	if (vocab_load(GAME_DIR "WORDS.TOK") != err_OK) {
+	char path[256];
+
+	sys_game_path(path, sizeof(path), "WORDS.TOK");
+	if (vocab_load(path) != err_OK) {
 		gfx_message_box("Can't load WORDS.TOK");
 		return err_BadFileOpen;
 	}
 
-	if (object_load(GAME_DIR "OBJECT") != err_OK) {
+	sys_game_path(path, sizeof(path), "OBJECT");
+	if (object_load(path) != err_OK) {
 		gfx_message_box("Can't load OBJECT");
 		return err_BadFileOpen;
 	}
@@ -120,34 +155,84 @@ static void init_game_state(void)
 	game.color_bg = 15;
 }
 
+/* Feeds one typed key to the parser's input line. */
+static void input_key(int key, int *len)
+{
+	if (!game.input_enabled || game.input_mode != INPUT_NORMAL)
+		return;
+
+	if (key == KEY_ENTER) {
+		if (*len > 0) {
+			game.input_buffer[*len] = '\0';
+			vocab_parse_input(game.input_buffer);
+			*len = 0;
+			game.input_buffer[0] = '\0';
+		}
+	} else if (key == KEY_ESCAPE) {
+		*len = 0;
+		game.input_buffer[0] = '\0';
+	} else if (key == KEY_BACKSPACE) {
+		if (*len > 0)
+			game.input_buffer[--*len] = '\0';
+	} else if (key >= 0x20 && key < 0x7F && *len < getvar(V_max_input_chars)) {
+		game.input_buffer[(*len)++] = (char)key;
+		game.input_buffer[*len] = '\0';
+	} else {
+		return;
+	}
+	gfx_update_input_line(game.input_buffer, *len);
+}
+
 static void main_loop(void)
 {
-	char line[MAX_INPUTLEN];
+	UINT32 last = sys_ticks();
+	int len = 0;
+	int key;
+
+	game.input_buffer[0] = '\0';
 
 	while (!game.quit_prog_now) {
-		logic_interpret_cycle();
+		UINT32 now = sys_ticks();
+		UINT32 period = (UINT32)getvar(V_time_delay) * 2;
 
-		gfx_write_status(getvar(V_score), getvar(V_max_score),
-			sound_is_enabled());
-		gfx_flush();
+		while ((key = kbd_poll()) != 0)
+			input_key(key, &len);
 
-		if (game.quit_prog_now)
-			break;
+		if (now - last >= period) {
+			last = now;
 
-		if (game.input_enabled && game.input_mode == INPUT_NORMAL) {
-			gfx_write_prompt();
-			if (kbd_read_line(line, sizeof(line) - 1, 0, 0)) {
-				strncpy(game.input_buffer, line, MAX_INPUTLEN - 1);
-				vocab_parse_input(game.input_buffer);
-			}
-		} else {
-			sys_idle_pump();
+			if (game.player_control)
+				setvar(V_ego_dir, kbd_direction());
+
+			logic_interpret_cycle();
+			if (game.quit_prog_now)
+				break;
+			motion_update();
+
+			gfx_write_status(getvar(V_score), getvar(V_max_score),
+				sound_is_enabled());
+			if (game.input_enabled && game.input_mode == INPUT_NORMAL)
+				gfx_update_input_line(game.input_buffer, len);
 		}
+
+		sys_idle_pump();
 	}
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
+	if (argc > 1 && strlen(argv[1]) < sizeof(game_dir) - 2) {
+		int n;
+
+		strcpy(game_dir, argv[1]);
+		n = (int)strlen(game_dir);
+		if (game_dir[n - 1] != '/' && game_dir[n - 1] != ':'
+				&& game_dir[n - 1] != '\\') {
+			game_dir[n] = '/';
+			game_dir[n + 1] = '\0';
+		}
+	}
+
 	if (startup_toolsets() != err_OK)
 		return 1;
 
